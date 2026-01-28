@@ -1,86 +1,132 @@
-import { Actor, Collider, CollisionContact, Engine, Side, vec } from "excalibur";
+import { Actor, BoundingBox, Engine, Keys, vec } from "excalibur";
 import { Resources } from "./resources";
-
-// Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
-// is likely built with an actor
-
-// They contain a bunch of useful components that you might use
-// actor.transform
-// actor.motion
-// actor.graphics
-// actor.body
-// actor.collider
-// actor.actions
-// actor.pointer
-
+import { Boost } from "./boost";
 
 export class Player extends Actor {
-  constructor() {
+  // Per second
+  private _speed: number = (200 / 1000)
+  private _boostSpeed: number = this._speed * 2.5
+  private _boost: Boost = new Boost(2000, 0.1)
+  private _isBoosting: boolean = false
+  private _flame: Actor
+  private _flameMoving: Actor
+  private _flameBoost: Actor
+  private _planeLeft: Actor
+  private _planeRight: Actor
+  private _moving: boolean = false
+  private _bounds: BoundingBox
+
+  get boostLevel(): number {
+    return this._boost.balance
+  }
+
+  get boostMax(): number {
+    return this._boost.max
+  }
+
+  constructor(bounds: BoundingBox) {
     super({
-      // Giving your actor a name is optional, but helps in debugging using the dev tools or debug mode
-      // https://github.com/excaliburjs/excalibur-extension/
-      // Chrome: https://chromewebstore.google.com/detail/excalibur-dev-tools/dinddaeielhddflijbbcmpefamfffekc
-      // Firefox: https://addons.mozilla.org/en-US/firefox/addon/excalibur-dev-tools/
       name: 'Player',
-      pos: vec(150, 150),
-      width: 100,
-      height: 100,
-      // anchor: vec(0, 0), // Actors default center colliders and graphics with anchor (0.5, 0.5)
-      // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
-    });
-    
+      pos: vec(100, 100),
+      width: 34,
+      height: 64,
+    })
+
+    this._bounds = bounds
+    this._flame = new Actor()
+    this._flame.graphics.add(Resources.PlaneFlame.toSprite())
+    this._flameMoving = new Actor()
+    this._flameMoving.graphics.add(Resources.PlaneFlameMove.toSprite())
+    this._flameBoost = new Actor()
+    this._flameBoost.graphics.add(Resources.PlaneFlameBoost.toSprite())
+    this._planeLeft = new Actor()
+    this._planeLeft.graphics.add(Resources.PlaneLeft.toSprite())
+    this._planeRight = new Actor()
+    this._planeRight.graphics.add(Resources.PlaneRight.toSprite())
+
+    this.addChild(this._flame)
   }
 
-  override onInitialize() {
-    // Generally recommended to stick logic in the "On initialize"
-    // This runs before the first update
-    // Useful when
-    // 1. You need things to be loaded like Images for graphics
-    // 2. You need excalibur to be initialized & started 
-    // 3. Deferring logic to run time instead of constructor time
-    // 4. Lazy instantiation
-    this.graphics.add(Resources.Sword.toSprite());
-
-    // Actions are useful for scripting common behavior, for example patrolling enemies
-    this.actions.delay(2000);
-    this.actions.repeatForever(ctx => {
-      ctx.moveBy({offset: vec(100, 0), duration: 1000});
-      ctx.moveBy({offset: vec(0, 100), duration: 1000});
-      ctx.moveBy({offset: vec(-100, 0), duration: 1000});
-      ctx.moveBy({offset: vec(0, -100), duration: 1000});
-    });
-
-    // Sometimes you want to click on an actor!
-    this.on('pointerdown', evt => {
-      // Pointer events tunnel in z order from the screen down, you can cancel them!
-      // if (true) {
-      //   evt.cancel();
-      // }
-      console.log('You clicked the actor @', evt.worldPos.toString());
-    });
+  override onInitialize(engine: Engine): void {
+    this.graphics.add(Resources.Plane.toSprite())
+    this._flame.graphics.opacity = 0.6
+    this._flameMoving.actions.repeatForever((c) => {
+      c.fade(0.7, 200)
+      c.fade(1, 200)
+    })
+    this._flameBoost.actions.repeatForever((c) => {
+      c.fade(0.8, 100)
+      c.fade(1, 100)
+    })
   }
 
-  override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    // Put any update logic here runs every frame before Actor builtins
-  }
+  override onPreUpdate(engine: Engine, elapsed: number): void {
+    const keyboard = engine.input.keyboard
+    const up = keyboard.isHeld(Keys.W) || keyboard.isHeld(Keys.Up)
+    const down = keyboard.isHeld(Keys.S) || keyboard.isHeld(Keys.Down)
+    const left = keyboard.isHeld(Keys.A) || keyboard.isHeld(Keys.Left)
+    const right = keyboard.isHeld(Keys.D) || keyboard.isHeld(Keys.Right)
+    const shift = keyboard.isHeld(Keys.ShiftLeft)
+    const move = this._speed * elapsed
+    const boostMove = this._boostSpeed * elapsed
+    const hasLeft = this.hasChild(this._planeLeft)
+    const hasRight = this.hasChild(this._planeRight)
 
-  override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    // Put any update logic here runs every frame after Actor builtins
-  }
+    this._moving = up || down || left || right
 
-  override onPreCollisionResolve(self: Collider, other: Collider, side: Side, contact: CollisionContact): void {
-    // Called before a collision is resolved, if you want to opt out of this specific collision call contact.cancel()
-  }
+    if (shift && this._boost.availableFor(elapsed)) {
+      this._isBoosting = true
+    } else {
+      this._isBoosting = false
+    }
 
-  override onPostCollisionResolve(self: Collider, other: Collider, side: Side, contact: CollisionContact): void {
-    // Called every time a collision is resolved and overlap is solved
-  }
+    if (this._isBoosting && this._moving) {
+      this._boost.spend(elapsed)
+    } else {
+      this._boost.tick(elapsed)
+    }
+    const moveAmount = this._isBoosting ? boostMove : move
+    if (up) {
+      this.pos.y -= moveAmount
+      this.pos.y = Math.max(this.pos.y, this._bounds.top)
+    } else if (down) {
+      this.pos.y += moveAmount
+      this.pos.y = Math.min(this.pos.y, this._bounds.bottom)
+    }
 
-  override onCollisionStart(self: Collider, other: Collider, side: Side, contact: CollisionContact): void {
-    // Called when a pair of objects are in contact
-  }
+    if (left) {
+      this.pos.x -= moveAmount
+      this.pos.x = Math.max(this.pos.x, this._bounds.left)
+      !hasLeft && this.addChild(this._planeLeft)
+      hasRight && this.removeChild(this._planeRight)
+    } else if (right) {
+      this.pos.x += moveAmount
+      this.pos.x = Math.min(this.pos.x, this._bounds.right)
+      !hasRight && this.addChild(this._planeRight)
+      hasLeft && this.removeChild(this._planeLeft)
+    } else {
+      hasLeft && this.removeChild(this._planeLeft)
+      hasRight && this.removeChild(this._planeRight)
+    }
 
-  override onCollisionEnd(self: Collider, other: Collider, side: Side, lastContact: CollisionContact): void {
-    // Called when a pair of objects separates
+    const boost = this._moving && this._isBoosting
+    const moving = !this._isBoosting && this._moving
+    const flamePresent = this.hasChild(this._flame)
+    const movePresent = this.hasChild(this._flameMoving)
+    const boostPresent = this.hasChild(this._flameBoost)
+
+    if (boost) {
+      !boostPresent && this.addChild(this._flameBoost)
+      this.removeChild(this._flame)
+      this.removeChild(this._flameMoving)
+    } else if (moving) {
+      !movePresent && this.addChild(this._flameMoving)
+      this.removeChild(this._flame)
+      this.removeChild(this._flameBoost)
+    } else {
+      !flamePresent && this.addChild(this._flame)
+      this.removeChild(this._flameMoving)
+      this.removeChild(this._flameBoost)
+    }
   }
 }
