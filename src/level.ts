@@ -1,10 +1,11 @@
-import { BoundingBox, Color, DefaultLoader, Engine, ExcaliburGraphicsContext, Scene, SceneActivationContext } from "excalibur";
+import { BoundingBox, Color, Engine, Scene } from "excalibur";
 import { Player } from "./player";
 import { LevelWidget } from "./boost-level";
 
 export class MyLevel extends Scene {
   private player?: Player
   private boostLevel?: LevelWidget
+  backgroundColor = Color.Azure
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
@@ -22,35 +23,9 @@ export class MyLevel extends Scene {
     this.add(this.boostLevel)
   }
 
-  override onPreLoad(loader: DefaultLoader): void {
-    // Add any scene specific resources to load
-  }
-
-  override onActivate(context: SceneActivationContext<unknown>): void {
-    // Called when Excalibur transitions to this scene
-    // Only 1 scene is active at a time
-  }
-
-  override onDeactivate(context: SceneActivationContext): void {
-    // Called when Excalibur transitions away from this scene
-    // Only 1 scene is active at a time
-  }
-
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     if (this.boostLevel && this.player) {
       this.boostLevel.level = this.player.boostLevel
     }
-  }
-
-  override onPostUpdate(engine: Engine, elapsedMs: number): void {
-    // Called after everything updates in the scene
-  }
-
-  override onPreDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
-    // Called before Excalibur draws to the screen
-  }
-
-  override onPostDraw(ctx: ExcaliburGraphicsContext, elapsedMs: number): void {
-    // Called after Excalibur draws to the screen
   }
 }

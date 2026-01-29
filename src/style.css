@@ -1,5 +1,26 @@
 @media (prefers-color-scheme: dark) {
+  html, body {
+    margin: 0;
+  }
+
+  html {
+    --bg-color: #333333;
+  }
+
   body {
-    background-color: black;
+    background: linear-gradient(
+      to bottom,
+      oklch(from var(--bg-color) calc(l - 0.1) c h),
+      oklch(from var(--bg-color) calc(l + 0.1) c h)
+    );
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  body canvas {
+    box-shadow: 0 0 100px black;
   }
 }
