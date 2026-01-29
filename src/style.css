@@ -23,4 +23,33 @@
   body canvas {
     box-shadow: 0 0 100px black;
   }
+
+  #container {
+    position: relative;
+  }
+
+  .start-button {
+    position: absolute;
+  }
+
+  .button {
+    border: 3px solid white;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 18px;
+    color: white;
+    background: transparent;
+    transition: all;
+    transition-duration: 0.2s;
+    cursor: pointer;
+  }
+
+  .button:hover {
+    background: #333333;
+  }
+
+  .button:active {
+    color: #CCCCCC;
+    border-color: #CCCCCC;
+  }
 }

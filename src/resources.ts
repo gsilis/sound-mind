@@ -1,4 +1,5 @@
-import { ImageSource, Loader } from "excalibur";
+import { ImageSource } from "excalibur";
+import { Loader } from "./loader";
 
 // It is convenient to put your resources in one place
 export const Resources = {
