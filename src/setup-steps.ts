@@ -1,10 +1,23 @@
+import { ImageSource } from "excalibur";
 import { Resources } from "./resources";
 
-export const setupSteps = [
+export type SetupStep = {
+  id: number,
+  title: string,
+  images: ImageSource[],
+}
+
+export const defaultSetupStep: SetupStep = {
+  id: -1,
+  title: 'N/A',
+  images: []
+}
+
+export const setupSteps: SetupStep[] = [
   {
     id: 1,
     title: 'Ship',
-    image: [
+    images: [
       Resources.Plane,
       Resources.PlaneFlame,
     ],

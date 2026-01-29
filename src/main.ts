@@ -1,6 +1,8 @@
 import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
 import { loader } from "./resources";
 import { MyLevel } from "./level";
+import { AudioSelectLevel } from "./audio-select-level";
+import { StartGameLevel } from "./start-game-level";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
@@ -10,7 +12,10 @@ const game = new Engine({
   displayMode: DisplayMode.Fixed, // Display mode tells excalibur how to fill the window
   pixelArt: true, // pixelArt will turn on the correct settings to render pixel art without jaggies or shimmering artifacts
   scenes: {
-    start:  MyLevel,
+    start: StartGameLevel,
+    audioShoot: AudioSelectLevel,
+    audioMissile: AudioSelectLevel,
+    game:  MyLevel,
   },
   // physics: {
   //   solver: SolverStrategy.Realistic,

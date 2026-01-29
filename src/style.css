@@ -32,24 +32,44 @@
     position: absolute;
   }
 
-  .button {
-    border: 3px solid white;
+  .menu {
+    --width: 300px;
+
+    display: flex;
+    width: var(--width);
+    position: absolute;
+    top: 50%;
+    left: calc(50% - (var(--width) / 2));
+    gap: 15px;
+  }
+
+  .menu.menu-vertical {
+    flex-direction: column;
+  }
+
+  .menu button {
+    --button-color: white;
+
+    padding: 0.5em 1em;
+    border: 3px solid var(--button-color);
     border-radius: 10px;
-    padding: 10px 15px;
-    font-size: 18px;
-    color: white;
     background: transparent;
+    color: var(--button-color);
     transition: all;
     transition-duration: 0.2s;
     cursor: pointer;
   }
 
-  .button:hover {
-    background: #333333;
+  .menu button:hover {
+    background: oklch(from var(--button-color) l c h / 0.1);
   }
 
-  .button:active {
-    color: #CCCCCC;
-    border-color: #CCCCCC;
+  .menu button:active {
+    color: oklch(from var(--button-color) calc(l - 0.1) c h);
+    border-color: oklch(from var(--button-color) calc(l - 0.1) c h);
+  }
+
+  .menu button.primary {
+    font-size: 1.2em;
   }
 }
