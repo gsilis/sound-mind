@@ -9,11 +9,12 @@ export class MyLevel extends Scene {
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
-    const width = engine.screen.halfCanvasWidth
+    const width = engine.screen.width
+    const halfWidth = engine.screen.halfCanvasWidth
     const height = engine.screen.height
     const third = height / 3
     this.player = new Player(new BoundingBox(20, third, width - 40, height - 100))
-    this.player.pos.x = width / 2
+    this.player.pos.x = halfWidth
     this.player.pos.y = height - 100
     this.add(this.player) // Actors need to be added to a scene to be drawn
 

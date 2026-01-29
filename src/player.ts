@@ -5,7 +5,7 @@ import { Boost } from "./boost";
 export class Player extends Actor {
   // Per second
   private _speed: number = (200 / 1000)
-  private _boostSpeed: number = this._speed * 2.5
+  private _boostSpeed: number = this._speed * 2
   private _boost: Boost = new Boost(2000, 0.1)
   private _isBoosting: boolean = false
   private _flame: Actor
