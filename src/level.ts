@@ -1,4 +1,4 @@
-import { Actor, BoundingBox, Canvas, Color, Engine, ExcaliburGraphicsContext, Scene } from "excalibur";
+import { Actor, BoundingBox, Canvas, Color, Engine, Scene } from "excalibur";
 import { Player } from "./player";
 import { LevelWidget } from "./boost-level";
 import { Resources } from "./resources";
@@ -9,7 +9,6 @@ export class MyLevel extends Scene {
   private background: Actor = new Actor()
   private backgroundCanvas?: Canvas
   private backgroundOffset = 0
-  backgroundColor = Color.Azure
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game

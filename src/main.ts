@@ -11,6 +11,7 @@ const transitionOut = new FadeInOut({ duration: 200, direction: 'out', color: Co
 const transitions = { in: transitionIn, out: transitionOut }
 
 const game = new Engine({
+  canvasElementId: 'game-canvas',
   width: 800, // Logical width and height in game pixels
   height: 600,
   displayMode: DisplayMode.Fixed, // Display mode tells excalibur how to fill the window
@@ -56,7 +57,7 @@ game.start('start', { // name of the start scene 'start'
     duration: 300,
     direction: 'in',
     color: Color.ExcaliburBlue
-  })
+  }),
 }).then(() => {
   // Do something after the game starts
 });
