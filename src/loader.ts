@@ -1,7 +1,7 @@
 import { DefaultLoader } from "excalibur";
 
 export class Loader extends DefaultLoader {
-  override onDraw(ctx: CanvasRenderingContext2D): void {
+override onDraw(ctx: CanvasRenderingContext2D): void {
     const width = ctx.canvas.width
     const height = ctx.canvas.height
     const halfWidth = width / 2

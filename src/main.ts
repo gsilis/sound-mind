@@ -6,6 +6,10 @@ import { StartGameLevel } from "./start-game-level";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
+const transitionIn = new FadeInOut({ duration: 200, direction: 'in', color: Color.Blue })
+const transitionOut = new FadeInOut({ duration: 200, direction: 'out', color: Color.Blue })
+const transitions = { in: transitionIn, out: transitionOut }
+
 const game = new Engine({
   width: 800, // Logical width and height in game pixels
   height: 600,
@@ -13,8 +17,30 @@ const game = new Engine({
   pixelArt: true, // pixelArt will turn on the correct settings to render pixel art without jaggies or shimmering artifacts
   scenes: {
     start: StartGameLevel,
-    audioShoot: AudioSelectLevel,
-    audioMissile: AudioSelectLevel,
+    audioShoot: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioMissile: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioShip: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioMove: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioBoost: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioExplosion: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
     game:  MyLevel,
   },
   // physics: {

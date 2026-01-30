@@ -2,20 +2,34 @@ import { ImageSource } from "excalibur";
 import { Resources } from "./resources";
 
 export type SetupStep = {
-  id: number,
+  sceneName: string,
   title: string,
   images: ImageSource[],
 }
 
 export const defaultSetupStep: SetupStep = {
-  id: -1,
+  sceneName: 'start',
   title: 'N/A',
   images: []
 }
 
 export const setupSteps: SetupStep[] = [
   {
-    id: 1,
+    sceneName: 'audioShoot',
+    title: 'Shots',
+    images: [
+      Resources.Shots,
+    ]
+  },
+  {
+    sceneName: 'audioMissile',
+    title: 'Missile',
+    images: [
+      Resources.Missile,
+    ]
+  },
+  {
+    sceneName: 'audioShip',
     title: 'Ship',
     images: [
       Resources.Plane,
@@ -23,7 +37,7 @@ export const setupSteps: SetupStep[] = [
     ],
   },
   {
-    id: 2,
+    sceneName: 'audioMove',
     title: 'Move',
     images: [
       Resources.Plane,
@@ -31,7 +45,7 @@ export const setupSteps: SetupStep[] = [
     ]
   },
   {
-    id: 3,
+    sceneName: 'audioBoost',
     title: 'Boost',
     images: [
       Resources.Plane,
@@ -39,21 +53,7 @@ export const setupSteps: SetupStep[] = [
     ]
   },
   {
-    id: 4,
-    title: 'Shots',
-    images: [
-      Resources.Shots,
-    ]
-  },
-  {
-    id: 5,
-    title: 'Missile',
-    images: [
-      Resources.Missile,
-    ]
-  },
-  {
-    id: 6,
+    sceneName: 'audioExplosion',
     title: 'Explosion',
     images: [
       Resources.Explosion,

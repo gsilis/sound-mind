@@ -1,5 +1,6 @@
 import { Color, Engine, Font, Label, Scene, SceneActivationContext, TextAlign } from "excalibur";
 import { FONT_TITLE } from "./fonts";
+import { setupSteps } from "./setup-steps";
 
 export class StartGameLevel extends Scene {
   private get _body(): HTMLBodyElement {
@@ -87,7 +88,7 @@ export class StartGameLevel extends Scene {
   private onStart(engine: Engine) {
     engine.goToScene('audioShoot', {
       sceneActivationData: {
-        step: 0
+        sceneName: setupSteps[0].sceneName
       }
     })
   }

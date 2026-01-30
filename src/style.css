@@ -33,17 +33,23 @@
   }
 
   .menu {
-    --width: 300px;
-
     display: flex;
     width: var(--width);
     position: absolute;
-    top: 50%;
+    top: var(--start-top);
     left: calc(50% - (var(--width) / 2));
     gap: 15px;
   }
 
+  .menu.menu-horizontal {
+    --width: auto;
+    --start-top: 65%;
+    flex-direction: row;
+  }
+
   .menu.menu-vertical {
+    --width: 300px;
+    --start-top: 55%;
     flex-direction: column;
   }
 
