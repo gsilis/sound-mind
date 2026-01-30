@@ -1,8 +1,12 @@
-import { Color, Engine, Font, Label, Scene, SceneActivationContext, TextAlign } from "excalibur";
+import { Color, ExcaliburGraphicsContext, Label, Scene, SceneActivationContext, vec } from "excalibur";
 import { FONT_TITLE } from "./fonts";
 import { setupSteps } from "./setup-steps";
 
 export class StartGameLevel extends Scene {
+  private _multiplier: number = 0
+  private whiteLabel?: Label
+  private blackLabel?: Label
+
   private get _body(): HTMLBodyElement {
     return document.body as HTMLBodyElement
   }
@@ -45,32 +49,34 @@ export class StartGameLevel extends Scene {
     return button
   }
 
-  override onInitialize(engine: Engine): void {
+  override onActivate(context: SceneActivationContext<unknown, undefined>): void {
+    this._multiplier = 0
+
     const startHandler = (event: Event) => {
       event.target?.removeEventListener('click', startHandler)
-      this.onStart(engine)
+      this.onStart()
     }
     const startWithDefaultsHandler = (event: Event) => {
       event.target?.removeEventListener('click', startWithDefaultsHandler)
-      this.onStartDefaults(engine)
+      this.onStartDefaults()
     }
 
     this._startGame.addEventListener('click', startHandler)
     this._startWithDefaults.addEventListener('click', startWithDefaultsHandler)
 
     const font = FONT_TITLE
-    const whiteLabel = new Label({ text: 'Sound Mind', font, color: Color.White })
-    const blackLabel = new Label({ text: 'Sound Mind', font, color: Color.Black })
-    const centerx = engine.screen.halfCanvasWidth
-    const centery = engine.screen.halfCanvasHeight - 150
+    this.whiteLabel = new Label({ text: 'Sound Mind', font, color: Color.White })
+    this.blackLabel = new Label({ text: 'Sound Mind', font, color: Color.Black })
+    const centerx = this.engine.screen.halfCanvasWidth
+    const centery = this.engine.screen.halfCanvasHeight - 150
 
-    whiteLabel.pos.x = centerx
-    whiteLabel.pos.y = centery
-    blackLabel.pos.x = centerx + 5
-    blackLabel.pos.y = centery + 7
+    this.whiteLabel.pos.x = centerx
+    this.whiteLabel.pos.y = centery
+    this.blackLabel.pos.x = centerx + 5
+    this.blackLabel.pos.y = centery + 7
 
-    this.add(blackLabel)
-    this.add(whiteLabel)
+    this.add(this.blackLabel)
+    this.add(this.whiteLabel)
   }
 
   override onDeactivate(context: SceneActivationContext) {
@@ -85,15 +91,31 @@ export class StartGameLevel extends Scene {
     })
   }
 
-  private onStart(engine: Engine) {
-    engine.goToScene('audioShoot', {
+  override onPreDraw(ctx: ExcaliburGraphicsContext, elapsed: number): void {
+    this._multiplier += elapsed
+    const value = Math.sin(this._multiplier / 1000)
+    const scaleValue = (0.05 * Math.sin(this._multiplier / 1300)) + 1
+
+    if (this.whiteLabel) {
+      this.whiteLabel.rotation = 0.02 * value
+      this.whiteLabel.scale = vec(scaleValue, scaleValue)
+    }
+
+    if (this.blackLabel) {
+      this.blackLabel.rotation = -0.03 * value
+      this.blackLabel.scale = vec(scaleValue, scaleValue)
+    }
+  }
+
+  private onStart = () => {
+    this.engine.goToScene('audioShoot', {
       sceneActivationData: {
         sceneName: setupSteps[0].sceneName
       }
     })
   }
 
-  private onStartDefaults(engine: Engine) {
-    engine.goToScene('game')
+  private onStartDefaults = () => {
+    this.engine.goToScene('game')
   }
 }

@@ -6,8 +6,8 @@ import { StartGameLevel } from "./start-game-level";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
-const transitionIn = new FadeInOut({ duration: 200, direction: 'in', color: Color.Blue })
-const transitionOut = new FadeInOut({ duration: 200, direction: 'out', color: Color.Blue })
+const transitionIn = new FadeInOut({ duration: 200, direction: 'in', color: Color.ExcaliburBlue })
+const transitionOut = new FadeInOut({ duration: 200, direction: 'out', color: Color.ExcaliburBlue })
 const transitions = { in: transitionIn, out: transitionOut }
 
 const game = new Engine({

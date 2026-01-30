@@ -71,7 +71,7 @@ export class AudioSelectLevel extends Scene {
       this.controlStrip.setup(container, `audio-${this.config.sceneName}`)
       this.controlStrip.nextButton.innerText = this.hasNextPage ? 'Next' : 'Start!'
       this.controlStrip.nextButton.addEventListener('click', this.onNextPage)
-      this.controlStrip.previousButton.innerText = this.hasPrevPage ? 'Back' : 'Exit'
+      this.controlStrip.previousButton.innerText = this.hasPrevPage ? '⏪' : 'Exit'
       this.controlStrip.previousButton.addEventListener('click', this.onPreviousPage)
     }    
   }
