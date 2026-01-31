@@ -3,11 +3,15 @@ import { setupSteps } from "./setup-steps";
 import { GradientBackground } from "./components/gradient-background";
 import { GameColor } from "./game-color";
 import { Resources } from "./resources";
+import { Menu } from "./components/menu";
+import { CenterMenu } from "./components/center-menu";
+import { ElementFactory } from "./components/element-factory";
 
 export class StartGameLevel extends Scene {
   private _multiplier: number = 0
   private _background?: GradientBackground
   private _logo: Actor = new Actor({ width: Resources.Logo.width, height: Resources.Logo.height })
+  private _menu?: Menu
 
   override onInitialize(engine: Engine): void {
     const { width, height } = engine.screen
@@ -23,6 +27,14 @@ export class StartGameLevel extends Scene {
     this._multiplier = 0
     this._background && this.add(this._background)
     this._logo && this.add(this._logo)
+    this._menu = new CenterMenu()
+    this._menu.setup((factory: ElementFactory) => {
+      return [
+        factory.createPrimaryButton('Play', this.onStart),
+        factory.createSpacer(),
+        factory.createButton('Settings', this.onStartDefaults)
+      ]
+    })
 
     const startHandler = (event: Event) => {
       event.target?.removeEventListener('click', startHandler)
@@ -39,6 +51,9 @@ export class StartGameLevel extends Scene {
 
   override onDeactivate() {
     this._background && this.remove(this._background)
+    if (this._menu) {
+      this._menu.teardown()
+    }
   }
 
   override onPreDraw(_ctx: ExcaliburGraphicsContext, elapsed: number): void {
