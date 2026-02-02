@@ -1,7 +1,10 @@
-import { Actor, BoundingBox, Canvas, Color, Engine, Scene } from "excalibur";
+import { Actor, BoundingBox, Canvas, Color, Engine, Keys, Scene } from "excalibur";
 import { Player } from "./player";
 import { LevelWidget } from "./boost-level";
 import { Resources } from "./resources";
+import { FireContainer } from "./components/fire-container";
+import { ShotFactory } from "./components/shot-factory";
+import { rateLimiter } from "./utilities/rate-limiter";
 
 export class MyLevel extends Scene {
   private player?: Player
@@ -9,6 +12,9 @@ export class MyLevel extends Scene {
   private background: Actor = new Actor()
   private backgroundCanvas?: Canvas
   private backgroundOffset = 0
+  private _shotFactory = new ShotFactory()
+  private _shots?: FireContainer
+  private _wrappedCreateShot?: CallableFunction
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
@@ -43,9 +49,17 @@ export class MyLevel extends Scene {
     this.boostLevel.pos.x = width - 20
     this.boostLevel.pos.y = 10
     this.add(this.boostLevel)
+
+    this._shots = new FireContainer({ factory: this._shotFactory, width, height })
+    this._wrappedCreateShot = rateLimiter(this._shots.addShot.bind(this._shots), 100)
+    this.add(this._shots)
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    const keyboard = engine.input.keyboard
+    const space = keyboard.isHeld(Keys.Space)
+    const rightShift = keyboard.isHeld(Keys.ShiftRight)
+
     if (this.boostLevel && this.player) {
       this.boostLevel.level = this.player.boostLevel
     }
@@ -56,5 +70,9 @@ export class MyLevel extends Scene {
 
     this.background.pos.y = this.backgroundOffset
     this.background.pos.x = widthOffset
+
+    if ((space || rightShift) && this._wrappedCreateShot) {
+      this._wrappedCreateShot(this.player?.pos.x || 0, this.player?.pos.y || 0)
+    }
   }
 }
