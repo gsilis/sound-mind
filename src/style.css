@@ -31,6 +31,12 @@
     position: absolute;
   }
 
+  .menu,
+  .menu .button {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    letter-spacing: 3px;
+  }
+
   .menu {
     --button-bg: #2b7fff;
     --button-color: white;
@@ -58,8 +64,6 @@
     padding: 0.3em 1.5em;
     font-size: 24px;
     color: var(--button-color);
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-    letter-spacing: 3px;
     text-transform: uppercase;
     border: none;
     background: linear-gradient(to bottom, var(--button-bg), oklch(from var(--button-bg) calc(l + var(--hover-lighten)) c h));
@@ -78,5 +82,13 @@
   .menu .button.primary:hover {
     scale: 1.05;
     --hover-lighten: -0.1;
+  }
+
+  .menu label.checkbox {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: white;
+    font-size: 24px;;
   }
 }

@@ -30,6 +30,20 @@ export class ElementFactory {
     return spacer
   }
 
+  createCheckbox(title: string, callback: EventListenerOrEventListenerObject): HTMLLabelElement {
+    const label = this.doc.createElement('label') as HTMLLabelElement
+    const input = this.doc.createElement('input') as HTMLInputElement
+
+    label.classList.add('checkbox')
+    input.type = 'checkbox'
+    input.addEventListener('change', callback)
+    label.innerText = title
+    label.prepend(input)
+    this.handles.push({ element: input, callback })
+
+    return label;
+  }
+
   /**
    * Should be called when a scene cleans up
    */

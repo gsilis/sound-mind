@@ -1,7 +1,10 @@
-import { Actor, Color, Engine, Label, Rectangle, Scene, SceneActivationContext } from "excalibur";
+import { Actor, Color, Engine, ExcaliburGraphicsContext, Label, Rectangle, Scene, SceneActivationContext, vec } from "excalibur";
 import { setupSteps, type SetupStep, defaultSetupStep } from "./setup-steps";
 import { FONT_SUBHEAD } from "./fonts";
-import { ControlStrip } from "./control-strip";
+import { GradientBackground } from "./components/gradient-background";
+import { ActorCreator } from "./utilities/actor-creator";
+import { Resources } from "./resources";
+import { GameColor } from "./game-color";
 
 interface AudioSelectLevelData {
   sceneName: string
@@ -11,7 +14,10 @@ export class AudioSelectLevel extends Scene {
   private name: string = ''
   private titleLabel: Label = new Label({ font: FONT_SUBHEAD, color: Color.White })
   private imageContainer: Actor = new Actor()
-  private controlStrip = new ControlStrip()
+  private _background?: GradientBackground
+  private _border = ActorCreator.fromImage(Resources.IconBox)
+  private _headerBackground?: GradientBackground
+  private _footerBackground?: GradientBackground
 
   get config(): SetupStep {
     return setupSteps.find(s => s.sceneName === this.name) || defaultSetupStep
@@ -36,51 +42,30 @@ export class AudioSelectLevel extends Scene {
     if (sceneName === undefined) sceneName = defaultSetupStep.sceneName
     this.name = sceneName
 
+    const { height, width } = this.engine.screen
+
+    this._background = new GradientBackground({ width, height })
+    this._background.from = GameColor.BRIGHT_BLUE
+    this._background.to = GameColor.DARK_BLUE
+    this._headerBackground = new GradientBackground({ width, height: height * 0.25 })
+    this._headerBackground.from = GameColor.DARK_BLUE
+    this._headerBackground.to = GameColor.DARK_BLUE
+    this._footerBackground = new GradientBackground({ width, height: height * 0.15 })
+    this._footerBackground.from = GameColor.DARK_BLUE
+    this._footerBackground.to = GameColor.DARK_BLUE
+
     this.titleLabel.text = this.config.title
-
-    let maxWidth = 0
-    let maxHeight = 0
-    this.config.images.forEach(image => {
-      const actor = new Actor({
-        width: image.width,
-        height: image.height,
-      })
-
-      actor.graphics.use(image.toSprite())
-      this.imageContainer.addChild(actor)
-
-      maxWidth = Math.max(maxWidth, image.width)
-      maxHeight = Math.max(maxHeight, image.height)
-    })
-
-    const padding = 40;
-    const borderWidth = maxWidth + padding
-    const borderHeight = maxHeight + padding
-    const border = new Actor({ width: borderWidth, height: borderHeight })
-    border.graphics.use(new Rectangle({
-      width: borderWidth,
-      height: borderHeight,
-      strokeColor: Color.White,
-      lineWidth: 10,
-      color: Color.Transparent,
-    }))
-    this.imageContainer.addChild(border)
-
-    const container = document.querySelector('#container') as HTMLElement
-    if (container) {
-      this.controlStrip.setup(container, `audio-${this.config.sceneName}`)
-      this.controlStrip.nextButton.innerText = this.hasNextPage ? 'Next' : 'Start!'
-      this.controlStrip.nextButton.addEventListener('click', this.onNextPage)
-      this.controlStrip.previousButton.innerText = this.hasPrevPage ? '⏪' : 'Exit'
-      this.controlStrip.previousButton.addEventListener('click', this.onPreviousPage)
-    }    
+    this._background && this.add(this._background)
+    this._headerBackground && this.add(this._headerBackground)
+    this._footerBackground && this.add(this._footerBackground)
+    this._border && this.add(this._border)
+    this.add(this.titleLabel)
+    this.add(this.imageContainer)
   }
 
   override onDeactivate(context: SceneActivationContext) {
     try {
-      this.controlStrip.nextButton.removeEventListener('click', this.onNextPage)
-      this.controlStrip.previousButton.removeEventListener('click', this.onPreviousPage)
-      this.controlStrip.teardown()
+      
     } catch (err) {
       console.group('AudioSelectLevel.onDeactivate: controlStrip teardown error')
       console.error(err)
@@ -93,11 +78,23 @@ export class AudioSelectLevel extends Scene {
     this.titleLabel.pos.x = halfWidth
     this.titleLabel.pos.y = 50
     this.titleLabel.text = this.config.title
-    this.add(this.titleLabel)
 
     this.imageContainer.pos.x = halfWidth
     this.imageContainer.pos.y = 200
-    this.add(this.imageContainer)
+  }
+
+  override onPreDraw(ctx: ExcaliburGraphicsContext, elapsed: number): void {
+    const { width, height } = this.engine.screen
+    const halfWidth = width / 2
+    const halfHeight = height / 2
+    const quarterHeight = halfHeight / 2
+    const sixthHeight = height * 0.15
+    this._background?.pos.setTo(halfWidth, halfHeight)
+    this._headerBackground?.pos.setTo(halfWidth, quarterHeight / 2)
+    this._footerBackground?.pos.setTo(halfWidth, height - (sixthHeight / 2))
+    this._border.pos.setTo(halfWidth, halfHeight - 50)
+    this.titleLabel.pos.x = halfWidth
+    this.imageContainer.pos.setTo(halfWidth, halfHeight - 50)
   }
 
   onNextPage = () => {

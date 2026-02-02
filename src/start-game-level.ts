@@ -12,6 +12,7 @@ export class StartGameLevel extends Scene {
   private _background?: GradientBackground
   private _logo: Actor = new Actor({ width: Resources.Logo.width, height: Resources.Logo.height })
   private _menu?: Menu
+  private _useDefaultAudio: boolean = false
 
   override onInitialize(engine: Engine): void {
     const { width, height } = engine.screen
@@ -32,18 +33,9 @@ export class StartGameLevel extends Scene {
       return [
         factory.createPrimaryButton('Play', this.onStart),
         factory.createSpacer(),
-        factory.createButton('Settings', this.onStartDefaults)
+        factory.createCheckbox('Use default audio', this.onUseDefaults)
       ]
     })
-
-    const startHandler = (event: Event) => {
-      event.target?.removeEventListener('click', startHandler)
-      this.onStart()
-    }
-    const startWithDefaultsHandler = (event: Event) => {
-      event.target?.removeEventListener('click', startWithDefaultsHandler)
-      this.onStartDefaults()
-    }
 
     this._logo.scale = vec(0, 0)
     this._logo.actions.scaleTo({ scale: vec(1, 1), duration: 500 })
@@ -77,14 +69,24 @@ export class StartGameLevel extends Scene {
   }
 
   private onStart = () => {
-    this.engine.goToScene('audioShoot', {
-      sceneActivationData: {
-        sceneName: setupSteps[0].sceneName
-      }
-    })
+    if (this._useDefaultAudio) {
+      this.engine.goToScene('game')
+    } else {
+      this.engine.goToScene('audioShoot', {
+        sceneActivationData: {
+          sceneName: setupSteps[0].sceneName
+        }
+      })
+    }
   }
 
-  private onStartDefaults = () => {
-    this.engine.goToScene('game')
+  private onUseDefaults = (event: Event) => {
+    const input = event.target as HTMLInputElement
+
+    if (input?.checked) {
+      this._useDefaultAudio = true
+    } else {
+      this._useDefaultAudio = false
+    }
   }
 }

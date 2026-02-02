@@ -6,6 +6,7 @@ export const Resources = {
   Background: new ImageSource("./images/background.png"),
   Drone: new ImageSource("./images/drone.png"),
   Explosion: new ImageSource("./images/explosion.gif"),
+  IconBox: new ImageSource("./images/icon-box.png"),
   Logo: new ImageSource("./images/logo.png"),
   Missile: new ImageSource("./images/missile.png"),
   Missing: new ImageSource("./images/missing.png"),
