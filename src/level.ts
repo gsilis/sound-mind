@@ -2,9 +2,10 @@ import { Actor, BoundingBox, Canvas, Color, Engine, Keys, Scene } from "excalibu
 import { Player } from "./player";
 import { LevelWidget } from "./boost-level";
 import { Resources } from "./resources";
-import { FireContainer } from "./components/fire-container";
 import { ShotFactory } from "./components/shot-factory";
 import { rateLimiter } from "./utilities/rate-limiter";
+import { ShipFactory } from "./components/ship-factory";
+import { between } from "./utilities/random";
 
 export class MyLevel extends Scene {
   private player?: Player
@@ -13,13 +14,14 @@ export class MyLevel extends Scene {
   private backgroundCanvas?: Canvas
   private backgroundOffset = 0
   private _shotFactory = new ShotFactory()
-  private _shots?: FireContainer
   private _wrappedCreateShot?: CallableFunction
+  private _shipCreator = new ShipFactory()
+  private _wrappedShipContainer?: CallableFunction
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
     const width = engine.screen.width
-    const halfWidth = engine.screen.halfCanvasWidth
+    const halfWidth = width / 2
     const height = engine.screen.height
     const third = height / 3
 
@@ -50,12 +52,13 @@ export class MyLevel extends Scene {
     this.boostLevel.pos.y = 10
     this.add(this.boostLevel)
 
-    this._shots = new FireContainer({ factory: this._shotFactory, width, height })
-    this._wrappedCreateShot = rateLimiter(this._shots.addShot.bind(this._shots), 100)
-    this.add(this._shots)
+    this._wrappedCreateShot = rateLimiter(this.addShot.bind(this), 500)
+    this._wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
+    const width = engine.screen.width
+    const height = engine.screen.height
     const keyboard = engine.input.keyboard
     const space = keyboard.isHeld(Keys.Space)
     const rightShift = keyboard.isHeld(Keys.ShiftRight)
@@ -74,5 +77,51 @@ export class MyLevel extends Scene {
     if ((space || rightShift) && this._wrappedCreateShot) {
       this._wrappedCreateShot(this.player?.pos.x || 0, this.player?.pos.y || 0)
     }
+
+    if (this._wrappedShipContainer) {
+      const xCoordinate = between(20, width - 29)
+      this._wrappedShipContainer(xCoordinate, -20, '')
+    }
+
+    const actors = [...this.actors]
+
+    // Cleanup
+    actors.forEach((actor) => {
+      if (actor.name === 'ship') {
+        if (actor.pos.y > height + 50) {
+          this.remove(actor)
+        }
+      } else if (actor.name === 'shot') {
+        if (actor.pos.y < 0) {
+          this.remove(actor)
+        }
+      }
+    })
+  }
+
+  private addShot() {
+    if (!this.player) return
+    const { x, y } = this.player.pos
+    const shot = this._shotFactory.create(x, y)
+    shot.on('collisionstart', () => {
+      console.log('START shot')
+    })
+    shot.on('collisionend', () => {
+      console.log('END collision')
+    })
+    this.add(shot)
+  }
+
+  private addShip() {
+    const x = between(5, this.engine.screen.width - 5)
+    const y = -20
+    const ship = this._shipCreator.create(x, y, '')
+    ship.on('collisionstart', () => {
+      console.log('StART')
+    })
+    ship.on('collisionend', () => {
+      console.log('END')
+    })
+    this.add(ship)
   }
 }

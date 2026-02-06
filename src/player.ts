@@ -1,4 +1,4 @@
-import { Actor, BoundingBox, Engine, Keys, vec } from "excalibur";
+import { Actor, BoundingBox, CollisionType, Engine, Keys, vec } from "excalibur";
 import { Resources } from "./resources";
 import { Boost } from "./boost";
 

@@ -1,8 +1,9 @@
-import { Actor, ImageSource } from "excalibur"
+import { Actor, ActorArgs, ImageSource } from "excalibur"
 
 export class ActorCreator {
-  static fromImage(image: ImageSource): Actor {
-    const actor = new Actor({ width: image.width, height: image.height })
+  static fromImage(image: ImageSource, opts: ActorArgs = {}): Actor {
+    const combined = { ...opts, width: image.width, height: image.height }
+    const actor = new Actor(combined as ActorArgs)
     actor.graphics.use(image.toSprite())
 
     return actor

@@ -1,12 +1,9 @@
 import { Actor } from "excalibur";
-import { Resources } from "../resources";
-import { ActorCreator } from "../utilities/actor-creator";
+import { Shot } from "./shot";
 
 export class ShotFactory {
   create(x: number, y: number): Actor {
-    const shot = ActorCreator.fromImage(Resources.Shots)
-    shot.pos.setTo(x, y)
-    shot.name = 'shot'
+    const shot = new Shot({ speed: 200 / 1000, x, y })
 
     return shot
   }
