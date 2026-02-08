@@ -1,14 +1,29 @@
-import { CollisionGroupManager } from "excalibur"
 import { ElementFactory } from "./components/element-factory"
+import { LabelFactory } from "./utilities/label-factory"
+import { FONT_TITLE } from "./fonts"
+import { Color } from "excalibur"
+import { Boost } from "./boost"
 
 let _data: GameData
 
+const STARTING_SCORE = 0
+const STARTING_HP = 100
+const SPEED = 200
+const BOOST_MULTI = 2
+const BOOST_RATE = 0.1
+const BOOST_MAX = 2000
+
 export class GameData {
   private _elementFactory?: ElementFactory
-  private constructor() {}
+  private _titleFactory?: LabelFactory
+  private _score: number = STARTING_SCORE
+  private _hp: number = STARTING_HP
+  private _running: boolean = false
+  private _boost = new Boost(BOOST_MAX, BOOST_RATE)
+  private _speed = (SPEED / 1000)
+  private _boostSpeed = this._speed * BOOST_MULTI
 
-  public playerCollisionGroup = CollisionGroupManager.create('player')
-  public targetCollisionGroup = CollisionGroupManager.create('enemy')
+  private constructor() {}
 
   static getInstance(): GameData {
     if (!_data) {
@@ -26,9 +41,47 @@ export class GameData {
     return this._elementFactory
   }
 
+  get titleLabelFactory(): LabelFactory {
+    if (!this._titleFactory) {
+      this._titleFactory = new LabelFactory(FONT_TITLE, Color.White)
+    }
+
+    return this._titleFactory
+  }
+
+  get speed() { return this._speed }
+  get boostSpeed() { return this._boostSpeed }
+  get boost() { return this._boost }
+  get running() { return this._running }
+  get score() { return this._score }
+  set score(points: number) { this._score += points }
+  get hp() { return this._hp }
+  set hp(points: number) {
+    this._hp = Math.max(0, this._hp + points)
+
+    if (this._hp === 0) {
+      this._running = false
+    }
+  }
+
   get root(): HTMLDivElement {
     const dom = document.querySelector('body > div.container') as HTMLDivElement
 
     return dom || (document.createElement('div') as HTMLDivElement)
+  }
+
+  reset() {
+    this._hp = STARTING_HP
+    this._score = STARTING_SCORE
+    this._running = false
+    this._boost.reset()
+  }
+
+  start() {
+    this._running = true
+  }
+
+  stop() {
+    this._running = false
   }
 }

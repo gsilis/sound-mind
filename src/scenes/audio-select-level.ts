@@ -1,10 +1,10 @@
-import { Actor, Color, Engine, ExcaliburGraphicsContext, Label, Rectangle, Scene, SceneActivationContext, vec } from "excalibur";
+import { Actor, Color, Engine, ExcaliburGraphicsContext, Label, Scene, SceneActivationContext } from "excalibur";
 import { setupSteps, type SetupStep, defaultSetupStep } from "./setup-steps";
-import { FONT_SUBHEAD } from "./fonts";
-import { GradientBackground } from "./components/gradient-background";
-import { ActorCreator } from "./utilities/actor-creator";
-import { Resources } from "./resources";
-import { GameColor } from "./game-color";
+import { FONT_SUBHEAD } from "../fonts";
+import { GradientBackground } from "../components/gradient-background";
+import { ActorCreator } from "../utilities/actor-creator";
+import { Resources } from "../resources";
+import { GameColor } from "../game-color";
 
 interface AudioSelectLevelData {
   sceneName: string

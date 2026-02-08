@@ -41,4 +41,8 @@ export class Boost {
       this._balance = Math.min(this._max, this._balance += (elapsed * this._rate))
     }
   }
+
+  reset() {
+    this._balance = this._max
+  }
 }

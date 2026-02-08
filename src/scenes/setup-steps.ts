@@ -1,5 +1,5 @@
 import { ImageSource } from "excalibur";
-import { Resources } from "./resources";
+import { Resources } from "../resources";
 
 export type SetupStep = {
   sceneName: string,

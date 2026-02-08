@@ -1,11 +1,14 @@
 import { Actor, Engine, ExcaliburGraphicsContext, Scene, SceneActivationContext, vec } from "excalibur";
 import { setupSteps } from "./setup-steps";
-import { GradientBackground } from "./components/gradient-background";
-import { GameColor } from "./game-color";
-import { Resources } from "./resources";
-import { Menu } from "./components/menu";
-import { CenterMenu } from "./components/center-menu";
-import { ElementFactory } from "./components/element-factory";
+import { GradientBackground } from "../components/gradient-background";
+import { GameColor } from "../game-color";
+import { Resources } from "../resources";
+import { Menu } from "../components/menu";
+import { CenterMenu } from "../components/center-menu";
+import { ElementFactory } from "../components/element-factory";
+import { GameData } from "../game-data";
+
+const gameData = GameData.getInstance()
 
 export class StartGameLevel extends Scene {
   private _multiplier: number = 0
@@ -71,6 +74,7 @@ export class StartGameLevel extends Scene {
   private onStart = () => {
     if (this._useDefaultAudio) {
       this.engine.goToScene('game')
+      gameData.start()
     } else {
       this.engine.goToScene('audioShoot', {
         sceneActivationData: {

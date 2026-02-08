@@ -1,6 +1,9 @@
 import { Actor, ActorArgs, CollisionType, Engine } from "excalibur";
 import { ActorCreator } from "../utilities/actor-creator";
 import { Resources } from "../resources";
+import { GameData } from "../game-data";
+
+const gameData = GameData.getInstance()
 
 export class Shot extends Actor {
   private _speed: number
@@ -20,6 +23,7 @@ export class Shot extends Actor {
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
+    if (!gameData.running) return
     super.onPreUpdate(engine, elapsed)
     this.pos.y -= (elapsed * this._speed)
   }

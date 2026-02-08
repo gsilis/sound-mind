@@ -1,6 +1,9 @@
 import { Actor, ActorArgs, CollisionType, Engine } from "excalibur";
 import { ActorCreator } from "../utilities/actor-creator";
 import { Resources } from "../resources";
+import { GameData } from "../game-data";
+
+const gameData = GameData.getInstance()
 
 export class Ship extends Actor {
   private _animationType: string
@@ -23,6 +26,8 @@ export class Ship extends Actor {
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
+    if (!gameData.running) return
+
     this._age = this._age || 0
     this._age += elapsed
 

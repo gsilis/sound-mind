@@ -1,8 +1,8 @@
 import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
 import { loader } from "./resources";
-import { MyLevel } from "./level";
-import { AudioSelectLevel } from "./audio-select-level";
-import { StartGameLevel } from "./start-game-level";
+import { Play } from "./scenes/play";
+import { AudioSelectLevel } from "./scenes/audio-select-level";
+import { StartGameLevel } from "./scenes/start-game-level";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
@@ -42,7 +42,7 @@ const game = new Engine({
       scene: AudioSelectLevel,
       transitions: { ...transitions }
     },
-    game:  MyLevel,
+    game:  Play,
   },
   // physics: {
   //   solver: SolverStrategy.Realistic,

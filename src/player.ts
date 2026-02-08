@@ -1,30 +1,35 @@
-import { Actor, BoundingBox, CollisionType, Engine, Keys, vec } from "excalibur";
+import { Actor, BoundingBox, CollisionType, Engine, hasPostDraw, Keys, vec } from "excalibur";
 import { Resources } from "./resources";
-import { Boost } from "./boost";
+import { GameData } from "./game-data";
+
+const gameData = GameData.getInstance()
+
+export const MOVE_STRAIGHT = 'straight'
+export const MOVE_LEFT = 'left'
+export const MOVE_RIGHT = 'right'
+export const FLY_IDLE = 'normal'
+export const FLY_STANDARD = 'standard'
+export const FLY_BOOST = 'boost'
+
+type MoveStateType = typeof MOVE_STRAIGHT | typeof MOVE_LEFT | typeof MOVE_RIGHT
+type FlyStateType = typeof FLY_IDLE | typeof FLY_STANDARD | typeof FLY_BOOST
 
 export class Player extends Actor {
   // Per second
-  private _speed: number = (200 / 1000)
-  private _boostSpeed: number = this._speed * 2
-  private _boost: Boost = new Boost(2000, 0.1)
-  private _isBoosting: boolean = false
   private _flame: Actor
   private _flameMoving: Actor
   private _flameBoost: Actor
   private _planeLeft: Actor
   private _planeRight: Actor
-  private _moving: boolean = false
-  private _bounds: BoundingBox
+  private _moveState: MoveStateType = MOVE_STRAIGHT
+  private _flyState: FlyStateType = FLY_IDLE
 
-  get boostLevel(): number {
-    return this._boost.balance
-  }
+  get moveState() { return this._moveState }
+  set moveState(value: MoveStateType) { this._moveState = value }
+  get flyState() { return this._flyState }
+  set flyState(value: FlyStateType) { this._flyState = value }
 
-  get boostMax(): number {
-    return this._boost.max
-  }
-
-  constructor(bounds: BoundingBox) {
+  constructor() {
     super({
       name: 'Player',
       pos: vec(100, 100),
@@ -33,7 +38,6 @@ export class Player extends Actor {
       collisionType: CollisionType.Passive,
     })
 
-    this._bounds = bounds
     this._flame = new Actor()
     this._flame.graphics.add(Resources.PlaneFlame.toSprite())
     this._flameMoving = new Actor()
@@ -62,72 +66,49 @@ export class Player extends Actor {
   }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
-    const keyboard = engine.input.keyboard
-    const up = keyboard.isHeld(Keys.W) || keyboard.isHeld(Keys.Up)
-    const down = keyboard.isHeld(Keys.S) || keyboard.isHeld(Keys.Down)
-    const left = keyboard.isHeld(Keys.A) || keyboard.isHeld(Keys.Left)
-    const right = keyboard.isHeld(Keys.D) || keyboard.isHeld(Keys.Right)
-    const shift = keyboard.isHeld(Keys.ShiftLeft)
-    const move = this._speed * elapsed
-    const boostMove = this._boostSpeed * elapsed
+    if (!gameData.running) return
+
     const hasLeft = this.hasChild(this._planeLeft)
     const hasRight = this.hasChild(this._planeRight)
+    const hasBoost = this.hasChild(this._flameBoost)
+    const hasIdle = this.hasChild(this._flame)
+    const hasMoving = this.hasChild(this._flameMoving)
 
-    this._moving = up || down || left || right
+    switch (this._flyState) {
+      case FLY_BOOST:
+        !hasBoost && this.addChild(this._flameBoost)
+        hasIdle && this.removeChild(this._flame)
+        hasMoving && this.removeChild(this._flameMoving)
+        break
 
-    if (shift && this._boost.availableFor(elapsed)) {
-      this._isBoosting = true
-    } else {
-      this._isBoosting = false
+      case FLY_STANDARD:
+        !hasMoving && this.addChild(this._flameMoving)
+        hasIdle && this.removeChild(this._flame)
+        hasBoost && this.removeChild(this._flameBoost)
+        break
+
+      case FLY_IDLE:
+        !hasIdle && this.addChild(this._flame)
+        hasMoving && this.removeChild(this._flameMoving)
+        hasBoost && this.removeChild(this._flameBoost)
+        break
     }
 
-    if (this._isBoosting && this._moving) {
-      this._boost.spend(elapsed)
-    } else {
-      this._boost.tick(elapsed)
-    }
-    const moveAmount = this._isBoosting ? boostMove : move
-    if (up) {
-      this.pos.y -= moveAmount
-      this.pos.y = Math.max(this.pos.y, this._bounds.top)
-    } else if (down) {
-      this.pos.y += moveAmount
-      this.pos.y = Math.min(this.pos.y, this._bounds.bottom)
-    }
+    switch (this._moveState) {
+      case MOVE_LEFT:
+        !hasLeft && this.addChild(this._planeLeft)
+        hasRight && this.removeChild(this._planeRight)
+        break
 
-    if (left) {
-      this.pos.x -= moveAmount
-      this.pos.x = Math.max(this.pos.x, this._bounds.left)
-      !hasLeft && this.addChild(this._planeLeft)
-      hasRight && this.removeChild(this._planeRight)
-    } else if (right) {
-      this.pos.x += moveAmount
-      this.pos.x = Math.min(this.pos.x, this._bounds.right)
-      !hasRight && this.addChild(this._planeRight)
-      hasLeft && this.removeChild(this._planeLeft)
-    } else {
-      hasLeft && this.removeChild(this._planeLeft)
-      hasRight && this.removeChild(this._planeRight)
-    }
+      case MOVE_RIGHT:
+        !hasRight && this.addChild(this._planeRight)
+        hasLeft && this.removeChild(this._planeLeft)
+        break
 
-    const boost = this._moving && this._isBoosting
-    const moving = !this._isBoosting && this._moving
-    const flamePresent = this.hasChild(this._flame)
-    const movePresent = this.hasChild(this._flameMoving)
-    const boostPresent = this.hasChild(this._flameBoost)
-
-    if (boost) {
-      !boostPresent && this.addChild(this._flameBoost)
-      this.removeChild(this._flame)
-      this.removeChild(this._flameMoving)
-    } else if (moving) {
-      !movePresent && this.addChild(this._flameMoving)
-      this.removeChild(this._flame)
-      this.removeChild(this._flameBoost)
-    } else {
-      !flamePresent && this.addChild(this._flame)
-      this.removeChild(this._flameMoving)
-      this.removeChild(this._flameBoost)
+      case MOVE_STRAIGHT:
+        hasLeft && this.removeChild(this._planeLeft)
+        hasRight && this.removeChild(this._planeRight)
+        break
     }
   }
 }
