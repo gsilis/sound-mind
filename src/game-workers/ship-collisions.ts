@@ -1,5 +1,8 @@
 import { Collider, Scene } from "excalibur";
 import { Ship } from "../components/ship";
+import { GameData } from "../game-data";
+
+const gameData = GameData.getInstance()
 
 export class ShipCollisions {
   private ships: Ship[] = []
@@ -20,10 +23,15 @@ export class ShipCollisions {
 
   private onCollision(self: Collider, other: Collider) {
     const name = other.owner.name
+    const ship = self.owner as Ship
 
     if (name === 'shot') {
       this.scene.remove(other.owner)
       this.scene.remove(self.owner)
+
+      if (ship.name === 'ship') {
+        gameData.score = ship.destroyValue
+      }
     }
   }
 

@@ -88,6 +88,7 @@ export class GameData {
     this._score = STARTING_SCORE
     this._running = false
     this._shots = SHOTS_AMOUNT
+    this._score = 0
     this._boost.reset()
   }
 

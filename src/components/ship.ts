@@ -3,15 +3,17 @@ import { ActorCreator } from "../utilities/actor-creator";
 import { Resources } from "../resources";
 import { GameData } from "../game-data";
 import { DamageCauser } from "../interfaces/damage-causer";
+import { DestroyValue } from "../interfaces/destroy-value";
 
 const gameData = GameData.getInstance()
 
-export class Ship extends Actor implements DamageCauser {
+export class Ship extends Actor implements DamageCauser, DestroyValue {
   private _animationType: string
   private _age?: number
   private _speed: number
 
   get damageToPlayer() { return -100 }
+  get destroyValue() { return 5 }
 
   constructor(args: ({ animationType: string, speed: number } & ActorArgs)) {
     const { width, height } = Resources.Ship

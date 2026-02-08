@@ -10,7 +10,7 @@ export class LabelFactory {
   }
 
   create(text: string, overrideColor?: Color): Label {
-    const label = new Label({ font: this.font, color: overrideColor && overrideColor || this.defaultColor, text: text })
+    const label = new Label({ font: this.font.clone(), color: overrideColor && overrideColor || this.defaultColor, text: text })
 
     return label
   }

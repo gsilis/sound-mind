@@ -26,6 +26,8 @@ export class Play extends Scene {
   private _pauseInstructions = gameData.labelFactory.create('Press [ESC] to continue')
   private _gameOverLabel = gameData.titleLabelFactory.create('GAME OVER')
   private _gameOverInstructions = gameData.labelFactory.create('Press [ENTER] to continue')
+  private scoreLabel = gameData.labelFactory.create('SCORE', Color.Gray)
+  private score = gameData.labelFactory.create('')
   playerBounds?: BoundingBox
   player?: Player
   boostLevel?: LevelWidget
@@ -73,6 +75,10 @@ export class Play extends Scene {
     this.add(this.shotBalanceLabel)
     this.add(this.shotBalance)
 
+    this.scoreLabel.font.textAlign = TextAlign.Left
+    this.add(this.scoreLabel)
+    this.add(this.score)
+
     this.wrappedCreateShot = rateLimiter(this.addShot.bind(this), 500)
     this.wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
 
@@ -96,7 +102,7 @@ export class Play extends Scene {
     if (this.shotBalance) {
       this.shotBalance.text = `${gameData.shots}`
       this.shotBalance.pos.y = 20
-      this.shotBalance.pos.x = (this.healthLevel?.pos.x || 0) - this.shotBalance.getTextWidth() - 15
+      this.shotBalance.pos.x = (this.healthLevel?.pos.x || 0) - this.shotBalance.getTextWidth() - 10
     }
 
     if (this.shotBalanceLabel) {
@@ -131,6 +137,12 @@ export class Play extends Scene {
       this.actors.includes(this._gameOverLabel) && this.remove(this._gameOverLabel)
       this.actors.includes(this._gameOverInstructions) && this.remove(this._gameOverInstructions)
     }
+
+    this.score.text = `${gameData.score}`
+    this.scoreLabel.pos.x = 10
+    this.scoreLabel.pos.y = 10
+    this.score.pos.x = this.scoreLabel.getTextWidth() + 10
+    this.score.pos.y = this.scoreLabel.pos.y
   }
 
   override onActivate(context: SceneActivationContext<unknown, undefined>): void {
