@@ -1,4 +1,4 @@
-import { Actor, BoundingBox, Canvas, Color, Engine, Label, Scene, SceneActivationContext } from "excalibur";
+import { Actor, BoundingBox, Canvas, Color, Engine, Label, Scene, SceneActivationContext, TextAlign } from "excalibur";
 import { Player } from "../player";
 import { LevelWidget } from "../level-widget";
 import { Resources } from "../resources";
@@ -22,6 +22,10 @@ export class Play extends Scene {
   private _playerCollisions?: PlayerCollisions
   private _shipCollisions?: ShipCollisions
   private _controller: ControlStateMachine<Play> = new ControlStateMachine()
+  private _pauseLabel = gameData.titleLabelFactory.create('Paused')
+  private _pauseInstructions = gameData.labelFactory.create('Press [ESC] to continue')
+  private _gameOverLabel = gameData.titleLabelFactory.create('GAME OVER')
+  private _gameOverInstructions = gameData.labelFactory.create('Press [ENTER] to continue')
   playerBounds?: BoundingBox
   player?: Player
   boostLevel?: LevelWidget
@@ -35,11 +39,10 @@ export class Play extends Scene {
   wrappedShipContainer?: CallableFunction
 
   override onInitialize(engine: Engine): void {
-    // Scene.onInitialize is where we recommend you perform the composition for your game
-    const width = engine.screen.width
-    const halfWidth = width / 2
-    const height = engine.screen.height
-    const third = height / 3
+    this._pauseLabel.font.textAlign = TextAlign.Center
+    this._pauseInstructions.font.textAlign = TextAlign.Center
+    this._gameOverLabel.font.textAlign = TextAlign.Center
+    this._gameOverInstructions.font.textAlign = TextAlign.Center
 
     this.backgroundCanvas = new Canvas({
       width: engine.canvasWidth * 2,
@@ -54,24 +57,15 @@ export class Play extends Scene {
       }
     })
     this.background.graphics.use(this.backgroundCanvas)
-    this.background.pos.x = engine.screen.canvasWidth
-    this.background.pos.y = engine.screen.canvasHeight
     this.add(this.background)
 
-    this.playerBounds = new BoundingBox(20, third, width - 40, height - 100)
     this.player = new Player()
-    this.player.pos.x = halfWidth
-    this.player.pos.y = height - 100
-    this.add(this.player) // Actors need to be added to a scene to be drawn
+    this.add(this.player)
 
     this.boostLevel = new LevelWidget(gameData.boost.max, Color.Green)
-    this.boostLevel.pos.x = width - 20
-    this.boostLevel.pos.y = 10
     this.add(this.boostLevel)
 
     this.healthLevel = new LevelWidget(gameData.hp, Color.Red)
-    this.healthLevel.pos.x = this.boostLevel.pos.x - 20
-    this.healthLevel.pos.y = this.boostLevel.pos.y
     this.add(this.healthLevel)
 
     this.shotBalanceLabel = gameData.labelFactory.create('Shots', Color.Gray)
@@ -93,6 +87,8 @@ export class Play extends Scene {
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     this._controller.update(this, engine, elapsedMs)
 
+    const { width, height } = engine.screen
+
     if (this.healthLevel) {
       this.healthLevel.level = gameData.hp
     }
@@ -107,10 +103,73 @@ export class Play extends Scene {
       this.shotBalanceLabel.pos.y = 20
       this.shotBalanceLabel.pos.x = (this.shotBalance?.pos.x || 0) - this.shotBalanceLabel.getTextWidth() - 5
     }
+
+    if (this._controller.isCurrent('pause')) {
+      !this.actors.includes(this._pauseLabel) && this.add(this._pauseLabel)
+      !this.actors.includes(this._pauseInstructions) && this.add(this._pauseInstructions)
+
+      this._pauseLabel.pos.x = width / 2
+      this._pauseInstructions.pos.x = width / 2
+
+      this._pauseLabel.pos.y = (height / 2) - 60
+      this._pauseInstructions.pos.y = (height / 2)
+    } else {
+      this.actors.includes(this._pauseLabel) && this.remove(this._pauseLabel)
+      this.actors.includes(this._pauseInstructions) && this.remove(this._pauseInstructions)
+    }
+
+    if (this._controller.isCurrent('game-over')) {
+      !this.actors.includes(this._gameOverLabel) && this.add(this._gameOverLabel)
+      !this.actors.includes(this._gameOverInstructions) && this.add(this._gameOverInstructions)
+
+      this._gameOverLabel.pos.x = width / 2
+      this._gameOverInstructions.pos.x = width / 2
+
+      this._gameOverLabel.pos.y = (height / 2) - 60
+      this._gameOverInstructions.pos.y = height / 2
+    } else {
+      this.actors.includes(this._gameOverLabel) && this.remove(this._gameOverLabel)
+      this.actors.includes(this._gameOverInstructions) && this.remove(this._gameOverInstructions)
+    }
   }
 
-  override onActivate(_context: SceneActivationContext<unknown, undefined>): void {
+  override onActivate(context: SceneActivationContext<unknown, undefined>): void {
+    const width = context.engine.screen.width
+    const halfWidth = width / 2
+    const height = context.engine.screen.height
+    const third = height / 3
+
+    this.background.pos.x = context.engine.screen.canvasWidth
+    this.background.pos.y = context.engine.screen.canvasHeight
+    this.playerBounds = new BoundingBox(20, third, width - 40, height - 100)
+
+    if (this.player) {
+      this.player.pos.x = halfWidth
+      this.player.pos.y = height - 100
+    }
+
+    if (this.boostLevel) {
+      this.boostLevel.pos.x = width - 20
+      this.boostLevel.pos.y = 10
+    }
+
+    if (this.healthLevel && this.boostLevel) {
+      this.healthLevel.pos.x = this.boostLevel.pos.x - 20
+      this.healthLevel.pos.y = this.boostLevel.pos.y
+    }
+
     this._controller.transitionTo('play')
+  }
+
+  override onDeactivate(context: SceneActivationContext) {
+    const actors = [...this.actors]
+    const toRemove = ['ship', 'shot']
+
+    actors.forEach(actor => {
+      if (toRemove.includes(actor.name)) {
+        this.remove(actor)
+      }
+    })
   }
 
   private addShot() {

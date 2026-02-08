@@ -5,8 +5,8 @@ import { GameData } from "../game-data";
 
 const gameData = GameData.getInstance()
 
-export class PauseScheme<ConcreteSceneClass> implements ControlScheme<ConcreteSceneClass> {
-  update(scene: ConcreteSceneClass, stateMachine: ControlStateMachine<ConcreteSceneClass>, engine: Engine, elapsed: number): void {
+export class PauseScheme<Play> implements ControlScheme<Play> {
+  update(scene: Play, stateMachine: ControlStateMachine<Play>, engine: Engine, elapsed: number): void {
     const keyboard = engine.input.keyboard
     const esc = keyboard.wasPressed(Keys.Esc)
 

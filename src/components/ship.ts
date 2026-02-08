@@ -2,13 +2,16 @@ import { Actor, ActorArgs, CollisionType, Engine } from "excalibur";
 import { ActorCreator } from "../utilities/actor-creator";
 import { Resources } from "../resources";
 import { GameData } from "../game-data";
+import { DamageCauser } from "../interfaces/damage-causer";
 
 const gameData = GameData.getInstance()
 
-export class Ship extends Actor {
+export class Ship extends Actor implements DamageCauser {
   private _animationType: string
   private _age?: number
   private _speed: number
+
+  get damageToPlayer() { return -100 }
 
   constructor(args: ({ animationType: string, speed: number } & ActorArgs)) {
     const { width, height } = Resources.Ship

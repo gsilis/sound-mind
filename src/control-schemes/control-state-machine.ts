@@ -13,10 +13,6 @@ export class ControlStateMachine<ConcreteSceneClass> {
     this.transitionable[name] = allowStates
   }
 
-  private currentScheme(): ControlScheme<ConcreteSceneClass> {
-    return this.states[this.state] || this.nullScheme
-  }
-
   transitionTo(newState: string) {
     const allowed = this.transitionable[this.state] || []
     const nullState = this.state === ''
@@ -31,5 +27,13 @@ export class ControlStateMachine<ConcreteSceneClass> {
 
   update(scene: ConcreteSceneClass, engine: Engine, elapsed: number) {
     this.currentScheme().update(scene, this, engine, elapsed)
+  }
+
+  isCurrent(state: string) {
+    return state === this.state
+  }
+
+  private currentScheme(): ControlScheme<ConcreteSceneClass> {
+    return this.states[this.state] || this.nullScheme
   }
 }

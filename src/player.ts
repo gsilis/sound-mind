@@ -1,4 +1,4 @@
-import { Actor, BoundingBox, CollisionType, Engine, hasPostDraw, Keys, vec } from "excalibur";
+import { Actor, CollisionType, Engine, vec } from "excalibur";
 import { Resources } from "./resources";
 import { GameData } from "./game-data";
 

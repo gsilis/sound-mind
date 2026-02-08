@@ -87,6 +87,7 @@ export class GameData {
     this._hp = STARTING_HP
     this._score = STARTING_SCORE
     this._running = false
+    this._shots = SHOTS_AMOUNT
     this._boost.reset()
   }
 
