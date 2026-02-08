@@ -15,3 +15,8 @@ npm create excalibur
 3. Run `npm install` to install dependencies
 4. Run `npm run dev` to start the Vite server!
 5. Have fun!
+
+# TODO
+- Better generator for ships, generate ships on a grid, so they don't overlap
+- Calculate a score
+- Game over screen
