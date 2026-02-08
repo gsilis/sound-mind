@@ -23,9 +23,16 @@ export class PlayScheme implements ControlScheme<Play> {
     const isMoving = up || down || left || right
     const isBoosting = isMoving && leftShift
     const esc = keyboard.wasPressed(Keys.Esc)
+    const shoot = space || rightShift
 
     if (esc) {
       stateMachine.transitionTo('pause')
+      gameData.stop()
+      return
+    }
+
+    if (gameData.hp === 0) {
+      stateMachine.transitionTo('game-over')
       gameData.stop()
       return
     }
@@ -77,7 +84,7 @@ export class PlayScheme implements ControlScheme<Play> {
     scene.background.pos.y = scene.backgroundOffset
     scene.background.pos.x = widthOffset
 
-    if ((space || rightShift) && scene.wrappedCreateShot) {
+    if (shoot && scene.wrappedCreateShot && gameData.shots > 0) {
       scene.wrappedCreateShot(scene.player?.pos.x || 0, scene.player?.pos.y || 0)
     }
 

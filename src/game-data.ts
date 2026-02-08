@@ -1,6 +1,6 @@
 import { ElementFactory } from "./components/element-factory"
 import { LabelFactory } from "./utilities/label-factory"
-import { FONT_TITLE } from "./fonts"
+import { FONT_STANDARD, FONT_TITLE } from "./fonts"
 import { Color } from "excalibur"
 import { Boost } from "./boost"
 
@@ -12,16 +12,19 @@ const SPEED = 200
 const BOOST_MULTI = 2
 const BOOST_RATE = 0.1
 const BOOST_MAX = 2000
+const SHOTS_AMOUNT = 500
 
 export class GameData {
   private _elementFactory?: ElementFactory
   private _titleFactory?: LabelFactory
+  private _labelFactory?: LabelFactory
   private _score: number = STARTING_SCORE
   private _hp: number = STARTING_HP
   private _running: boolean = false
   private _boost = new Boost(BOOST_MAX, BOOST_RATE)
   private _speed = (SPEED / 1000)
   private _boostSpeed = this._speed * BOOST_MULTI
+  private _shots = SHOTS_AMOUNT
 
   private constructor() {}
 
@@ -41,6 +44,14 @@ export class GameData {
     return this._elementFactory
   }
 
+  get labelFactory(): LabelFactory {
+    if (!this._labelFactory) {
+      this._labelFactory = new LabelFactory(FONT_STANDARD, Color.White)
+    }
+
+    return this._labelFactory
+  }
+
   get titleLabelFactory(): LabelFactory {
     if (!this._titleFactory) {
       this._titleFactory = new LabelFactory(FONT_TITLE, Color.White)
@@ -49,6 +60,8 @@ export class GameData {
     return this._titleFactory
   }
 
+  get shots() { return this._shots }
+  set shots(value: number) { this._shots = value }
   get speed() { return this._speed }
   get boostSpeed() { return this._boostSpeed }
   get boost() { return this._boost }

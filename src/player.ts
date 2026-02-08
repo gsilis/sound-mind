@@ -10,9 +10,12 @@ export const MOVE_RIGHT = 'right'
 export const FLY_IDLE = 'normal'
 export const FLY_STANDARD = 'standard'
 export const FLY_BOOST = 'boost'
+export const HEALTH_NORMAL = 'healthy'
+export const HEALTH_HIT = 'hit'
 
 type MoveStateType = typeof MOVE_STRAIGHT | typeof MOVE_LEFT | typeof MOVE_RIGHT
 type FlyStateType = typeof FLY_IDLE | typeof FLY_STANDARD | typeof FLY_BOOST
+type HealthStateType = typeof HEALTH_NORMAL | typeof HEALTH_HIT
 
 export class Player extends Actor {
   // Per second
@@ -23,15 +26,27 @@ export class Player extends Actor {
   private _planeRight: Actor
   private _moveState: MoveStateType = MOVE_STRAIGHT
   private _flyState: FlyStateType = FLY_IDLE
+  private _healthState: HealthStateType = HEALTH_NORMAL
 
   get moveState() { return this._moveState }
   set moveState(value: MoveStateType) { this._moveState = value }
   get flyState() { return this._flyState }
   set flyState(value: FlyStateType) { this._flyState = value }
+  get isInvincible() { return this._healthState === HEALTH_HIT }
+  get healthState() { return this._healthState }
+  set healthState(value: HealthStateType) {
+    if (value === HEALTH_HIT) {
+      this.actions.blink(50, 50, 20).toPromise().then(() => {
+        this._healthState = HEALTH_NORMAL
+      })
+    }
+
+    this._healthState = value
+  }
 
   constructor() {
     super({
-      name: 'Player',
+      name: 'player',
       pos: vec(100, 100),
       width: 34,
       height: 64,

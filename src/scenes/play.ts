@@ -1,6 +1,6 @@
-import { Actor, BoundingBox, Canvas, Color, Engine, Keys, Scene, SceneActivationContext } from "excalibur";
+import { Actor, BoundingBox, Canvas, Color, Engine, Label, Scene, SceneActivationContext } from "excalibur";
 import { Player } from "../player";
-import { LevelWidget } from "../boost-level";
+import { LevelWidget } from "../level-widget";
 import { Resources } from "../resources";
 import { ShotFactory } from "../components/shot-factory";
 import { rateLimiter } from "../utilities/rate-limiter";
@@ -25,6 +25,9 @@ export class Play extends Scene {
   playerBounds?: BoundingBox
   player?: Player
   boostLevel?: LevelWidget
+  healthLevel?: LevelWidget
+  shotBalance?: Label
+  shotBalanceLabel?: Label
   background: Actor = new Actor()
   backgroundCanvas?: Canvas
   backgroundOffset = 0
@@ -66,6 +69,16 @@ export class Play extends Scene {
     this.boostLevel.pos.y = 10
     this.add(this.boostLevel)
 
+    this.healthLevel = new LevelWidget(gameData.hp, Color.Red)
+    this.healthLevel.pos.x = this.boostLevel.pos.x - 20
+    this.healthLevel.pos.y = this.boostLevel.pos.y
+    this.add(this.healthLevel)
+
+    this.shotBalanceLabel = gameData.labelFactory.create('Shots', Color.Gray)
+    this.shotBalance = gameData.labelFactory.create('')
+    this.add(this.shotBalanceLabel)
+    this.add(this.shotBalance)
+
     this.wrappedCreateShot = rateLimiter(this.addShot.bind(this), 500)
     this.wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
 
@@ -79,9 +92,24 @@ export class Play extends Scene {
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     this._controller.update(this, engine, elapsedMs)
+
+    if (this.healthLevel) {
+      this.healthLevel.level = gameData.hp
+    }
+    
+    if (this.shotBalance) {
+      this.shotBalance.text = `${gameData.shots}`
+      this.shotBalance.pos.y = 20
+      this.shotBalance.pos.x = (this.healthLevel?.pos.x || 0) - this.shotBalance.getTextWidth() - 15
+    }
+
+    if (this.shotBalanceLabel) {
+      this.shotBalanceLabel.pos.y = 20
+      this.shotBalanceLabel.pos.x = (this.shotBalance?.pos.x || 0) - this.shotBalanceLabel.getTextWidth() - 5
+    }
   }
 
-  override onActivate(context: SceneActivationContext<unknown, undefined>): void {
+  override onActivate(_context: SceneActivationContext<unknown, undefined>): void {
     this._controller.transitionTo('play')
   }
 
