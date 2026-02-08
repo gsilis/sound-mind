@@ -1,4 +1,4 @@
-import { Actor, BoundingBox, Canvas, Color, Engine, Keys, Scene } from "excalibur";
+import { Actor, BoundingBox, Canvas, Collider, Color, Engine, Keys, Scene } from "excalibur";
 import { Player } from "./player";
 import { LevelWidget } from "./boost-level";
 import { Resources } from "./resources";
@@ -6,6 +6,8 @@ import { ShotFactory } from "./components/shot-factory";
 import { rateLimiter } from "./utilities/rate-limiter";
 import { ShipFactory } from "./components/ship-factory";
 import { between } from "./utilities/random";
+import { PlayerCollisions } from "./game-workers/player-collisions";
+import { ShipCollisions } from "./game-workers/ship-collisions";
 
 export class MyLevel extends Scene {
   private player?: Player
@@ -17,6 +19,8 @@ export class MyLevel extends Scene {
   private _wrappedCreateShot?: CallableFunction
   private _shipCreator = new ShipFactory()
   private _wrappedShipContainer?: CallableFunction
+  private _playerCollisions?: PlayerCollisions
+  private _shipCollisions?: ShipCollisions
 
   override onInitialize(engine: Engine): void {
     // Scene.onInitialize is where we recommend you perform the composition for your game
@@ -54,6 +58,9 @@ export class MyLevel extends Scene {
 
     this._wrappedCreateShot = rateLimiter(this.addShot.bind(this), 500)
     this._wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
+
+    this._playerCollisions = new PlayerCollisions(this, this.player)
+    this._shipCollisions = new ShipCollisions(this)
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -102,13 +109,7 @@ export class MyLevel extends Scene {
   private addShot() {
     if (!this.player) return
     const { x, y } = this.player.pos
-    const shot = this._shotFactory.create(x, y)
-    shot.on('collisionstart', () => {
-      console.log('START shot')
-    })
-    shot.on('collisionend', () => {
-      console.log('END collision')
-    })
+    const shot = this._shotFactory.create(x, y - 40)
     this.add(shot)
   }
 
@@ -116,12 +117,7 @@ export class MyLevel extends Scene {
     const x = between(5, this.engine.screen.width - 5)
     const y = -20
     const ship = this._shipCreator.create(x, y, '')
-    ship.on('collisionstart', () => {
-      console.log('StART')
-    })
-    ship.on('collisionend', () => {
-      console.log('END')
-    })
+    this._shipCollisions?.add(ship)
     this.add(ship)
   }
 }

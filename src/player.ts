@@ -30,6 +30,7 @@ export class Player extends Actor {
       pos: vec(100, 100),
       width: 34,
       height: 64,
+      collisionType: CollisionType.Passive,
     })
 
     this._bounds = bounds
