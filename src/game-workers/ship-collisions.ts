@@ -1,15 +1,23 @@
 import { Collider, Scene } from "excalibur";
 import { Ship } from "../components/ship";
 import { GameData } from "../game-data";
+import { TemporaryItemManager } from "../components/temporary-item-manager";
+import { Explosion } from "../components/explosion";
+import { Hit } from "../components/hit";
+import { Shot } from "../components/shot";
 
 const gameData = GameData.getInstance()
 
 export class ShipCollisions {
   private ships: Ship[] = []
   private scene: Scene
+  private explosionManager: TemporaryItemManager<Explosion>
+  private hitManager: TemporaryItemManager<Hit>
 
-  constructor(scene: Scene) {
+  constructor(scene: Scene, explosionManager: TemporaryItemManager<Explosion>, hitManager: TemporaryItemManager<Hit>) {
     this.scene = scene
+    this.hitManager = hitManager
+    this.explosionManager = explosionManager
   }
 
   add(ship: Ship) {
@@ -22,15 +30,18 @@ export class ShipCollisions {
   }
 
   private onCollision(self: Collider, other: Collider) {
-    const name = other.owner.name
+    const shot = other.owner as Shot
     const ship = self.owner as Ship
 
-    if (name === 'shot') {
-      this.scene.remove(other.owner)
-      this.scene.remove(self.owner)
-
-      if (ship.name === 'ship') {
-        gameData.score = ship.destroyValue
+    if (shot.name === 'shot' && ship.name === 'ship') {
+      ship.hp -= 1
+      this.hitManager.createAt(shot)
+      this.scene.remove(shot)
+      
+      if (ship.hp === 0) {
+        this.explosionManager.createAt(ship)
+        this.scene.remove(shot)
+        this.scene.remove(ship)
       }
     }
   }

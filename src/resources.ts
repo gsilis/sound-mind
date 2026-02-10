@@ -3,9 +3,12 @@ import { Loader } from "./loader";
 
 // It is convenient to put your resources in one place
 export const Resources = {
+  Ammo: new ImageSource("./images/ammo.png"),
   Background: new ImageSource("./images/background.png"),
   Drone: new ImageSource("./images/drone.png"),
-  Explosion: new ImageSource("./images/explosion.gif"),
+  Explosion: new ImageSource("./images/explosion-sheet.png"),
+  Fuel: new ImageSource("./images/fuel.png"),
+  Hit: new ImageSource("./images/hit.png"),
   IconBox: new ImageSource("./images/icon-box.png"),
   Logo: new ImageSource("./images/logo.png"),
   Missile: new ImageSource("./images/missile.png"),

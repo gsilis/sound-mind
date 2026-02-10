@@ -11,15 +11,21 @@ export class Ship extends Actor implements DamageCauser, DestroyValue {
   private _animationType: string
   private _age?: number
   private _speed: number
+  private _hp: number
 
   get damageToPlayer() { return -100 }
   get destroyValue() { return 5 }
+  get hp() { return this._hp }
+  set hp(value: number) {
+    this._hp = Math.max(this._hp - 1, 0)
+  }
 
-  constructor(args: ({ animationType: string, speed: number } & ActorArgs)) {
+  constructor(args: ({ animationType: string, speed: number, hp: number } & ActorArgs)) {
     const { width, height } = Resources.Ship
 
     // @ts-ignore
     super({ ...args, collisionType: CollisionType.Passive, width, height })
+    this._hp = args.hp
     this._animationType = args.animationType
     this._speed = args.speed
     // this.collider = new ColliderComponent(new CircleCollider({ radius: width / 2 }))

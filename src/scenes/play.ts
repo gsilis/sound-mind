@@ -13,6 +13,9 @@ import { PlayScheme } from "../control-schemes/play-scheme";
 import { PauseScheme } from "../control-schemes/pause-scheme";
 import { GameOverScheme } from "../control-schemes/game-over-scheme";
 import { GameData } from "../game-data";
+import { TemporaryItemManager } from "../components/temporary-item-manager";
+import { Explosion } from "../components/explosion";
+import { Hit } from "../components/hit";
 
 const gameData = GameData.getInstance()
 
@@ -26,6 +29,8 @@ export class Play extends Scene {
   private _pauseInstructions = gameData.labelFactory.create('Press [ESC] to continue')
   private _gameOverLabel = gameData.titleLabelFactory.create('GAME OVER')
   private _gameOverInstructions = gameData.labelFactory.create('Press [ENTER] to continue')
+  private _explosionManager?: TemporaryItemManager<Explosion>
+  private _hitManager?: TemporaryItemManager<Hit>
   private scoreLabel = gameData.labelFactory.create('SCORE', Color.Gray)
   private score = gameData.labelFactory.create('')
   playerBounds?: BoundingBox
@@ -45,6 +50,8 @@ export class Play extends Scene {
     this._pauseInstructions.font.textAlign = TextAlign.Center
     this._gameOverLabel.font.textAlign = TextAlign.Center
     this._gameOverInstructions.font.textAlign = TextAlign.Center
+    this._explosionManager = new TemporaryItemManager(this, Explosion, 'explosion')
+    this._hitManager = new TemporaryItemManager(this, Hit, 'hit')
 
     this.backgroundCanvas = new Canvas({
       width: engine.canvasWidth * 2,
@@ -83,7 +90,7 @@ export class Play extends Scene {
     this.wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
 
     this._playerCollisions = new PlayerCollisions(this, this.player)
-    this._shipCollisions = new ShipCollisions(this)
+    this._shipCollisions = new ShipCollisions(this, this._explosionManager, this._hitManager)
 
     this._controller.addState('play', new PlayScheme(), ['pause', 'game-over'])
     this._controller.addState('pause', new PauseScheme(), ['play'])
