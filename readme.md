@@ -18,5 +18,7 @@ npm create excalibur
 
 # TODO
 - Better generator for ships, generate ships on a grid, so they don't overlap
-- Calculate a score
-- Game over screen
+- generate waves of ships, some kind of progression
+- web audio work
++ Calculate a score
++ Game over screen
