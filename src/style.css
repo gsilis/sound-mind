@@ -60,6 +60,11 @@
     align-items: center;
   }
 
+  .menu.bottom {
+    bottom: 0;
+    padding-bottom: 20px;
+  }
+
   .menu .button {
     padding: 0.3em 1.5em;
     font-size: 24px;

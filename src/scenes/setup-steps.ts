@@ -1,10 +1,11 @@
-import { ImageSource } from "excalibur";
+import { Actor, ImageSource } from "excalibur";
 import { Resources } from "../resources";
+import { Explosion } from "../components/explosion";
 
 export type SetupStep = {
   sceneName: string,
   title: string,
-  images: ImageSource[],
+  images: (ImageSource | Actor)[],
 }
 
 export const defaultSetupStep: SetupStep = {
@@ -56,7 +57,7 @@ export const setupSteps: SetupStep[] = [
     sceneName: 'audioExplosion',
     title: 'Explosion',
     images: [
-      Resources.Explosion,
+      new Explosion({ loop: true }),
     ]
   }
 ]
