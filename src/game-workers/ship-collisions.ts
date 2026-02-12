@@ -40,6 +40,7 @@ export class ShipCollisions {
       
       if (ship.hp === 0) {
         this.explosionManager.createAt(ship)
+        gameData.sounds.explode.play()
         this.scene.remove(shot)
         this.scene.remove(ship)
       }

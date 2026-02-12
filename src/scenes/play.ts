@@ -196,6 +196,8 @@ export class Play extends Scene {
     const { x, y } = this.player.pos
     const shot = this._shotFactory.create(x, y - 40)
     this.add(shot)
+
+    gameData.sounds.shoot.play()
   }
 
   private addShip() {

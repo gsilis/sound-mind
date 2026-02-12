@@ -10,6 +10,10 @@ import { ElementFactory } from "../components/element-factory";
 import { PlayAudioComponent } from "../components/play-audio-component";
 import { CenterMenu, DIRECTION_HORIZONTAL } from "../components/center-menu";
 import { LaunchRecordButton } from "../components/launch-record-button";
+import { GameData } from "../game-data";
+import { EnableMicrophoneDialog } from "../components/enable-microphone-dialog";
+
+const gameData = GameData.getInstance()
 
 interface AudioSelectLevelData {
   sceneName: string
@@ -98,6 +102,8 @@ export class AudioSelectLevel extends Scene {
       return elements
     })
 
+    this._recordAudio.addEventListener('click', this.onRecord)
+
     this._bottomMenu = new BottomMenu()
     this._bottomMenu.setup((factory: ElementFactory) => {
       const elements: HTMLElement[] = []
@@ -126,6 +132,10 @@ export class AudioSelectLevel extends Scene {
   }
 
   override onDeactivate(context: SceneActivationContext) {
+    if (this._recordAudio) {
+      this._recordAudio.removeEventListener('click', this.onRecord)
+    }
+
     if (this._bottomMenu) {
       this._bottomMenu.teardown()
     }
@@ -175,6 +185,14 @@ export class AudioSelectLevel extends Scene {
       this.engine.goToScene(prevSceneName, { sceneActivationData: { sceneName: prevSceneName } })
     } else {
       this.engine.goToScene('start')
+    }
+  }
+
+  onRecord = () => {
+    if (gameData.mediaStream) {
+      
+    } else {
+      gameData.modal.show(new EnableMicrophoneDialog())
     }
   }
 }

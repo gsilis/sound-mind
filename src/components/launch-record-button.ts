@@ -1,3 +1,5 @@
+import { GameData } from "../game-data"
+
 const template = `
   <style>
     .root {
@@ -49,25 +51,14 @@ const template = `
 `
 
 export class LaunchRecordButton extends HTMLElement {
-  private _button?: HTMLButtonElement | null
   private _label?: HTMLSpanElement | null
 
   connectedCallback() {
     this.innerHTML = template
 
-    this._button = this.querySelector<HTMLButtonElement>('button')
     this._label = this.querySelector<HTMLSpanElement>('span')
 
     if (this._label) this._label.innerText = '🎙️'
-    if (this._button) this._button.addEventListener('click', this.onClick)
-  }
-
-  disconnectedCallback() {
-    if (this._button) this._button.removeEventListener('click', this.onClick)
-  }
-
-  onClick = () => {
-    console.log('launch recorder!')
   }
 }
 

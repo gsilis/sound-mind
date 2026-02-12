@@ -1,8 +1,10 @@
 import { ElementFactory } from "./components/element-factory"
 import { LabelFactory } from "./utilities/label-factory"
 import { FONT_STANDARD, FONT_TITLE } from "./fonts"
-import { Color } from "excalibur"
+import { Color, SoundManager } from "excalibur"
 import { Boost } from "./boost"
+import { ModalManager } from "./utilities/modal-manager"
+import { GameSounds } from "./game-sounds"
 
 let _data: GameData
 
@@ -18,6 +20,7 @@ export class GameData {
   private _elementFactory?: ElementFactory
   private _titleFactory?: LabelFactory
   private _labelFactory?: LabelFactory
+  private _audioStream?: MediaStream
   private _score: number = STARTING_SCORE
   private _hp: number = STARTING_HP
   private _running: boolean = false
@@ -25,6 +28,8 @@ export class GameData {
   private _speed = (SPEED / 1000)
   private _boostSpeed = this._speed * BOOST_MULTI
   private _shots = SHOTS_AMOUNT
+  private _modalManager = new ModalManager(document.body)
+  private _sounds = new GameSounds()
 
   private constructor() {}
 
@@ -34,6 +39,14 @@ export class GameData {
     }
 
     return _data
+  }
+
+  get modal() {
+    return this._modalManager
+  }
+
+  get sounds() {
+    return this._sounds
   }
 
   get elementFactory(): ElementFactory {
@@ -58,6 +71,14 @@ export class GameData {
     }
 
     return this._titleFactory
+  }
+
+  get mediaStream() {
+    return this._audioStream
+  }
+
+  set mediaStream(stream: MediaStream | undefined) {
+    this._audioStream = stream
   }
 
   get shots() { return this._shots }

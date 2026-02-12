@@ -19,6 +19,7 @@ export class Ship extends Actor implements DamageCauser, DestroyValue {
   set hp(value: number) {
     this._hp = Math.max(this._hp - 1, 0)
   }
+  get speed() { return this._speed }
 
   constructor(args: ({ animationType: string, speed: number, hp: number } & ActorArgs)) {
     const { width, height } = Resources.Ship
