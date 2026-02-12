@@ -1,4 +1,4 @@
-import { Actor, Color, Engine, ExcaliburGraphicsContext, Label, Scene, SceneActivationContext, vec } from "excalibur";
+import { Actor, Color, Engine, ExcaliburGraphicsContext, Label, Scene, SceneActivationContext, Sound, vec } from "excalibur";
 import { setupSteps, type SetupStep, defaultSetupStep } from "./setup-steps";
 import { FONT_SUBHEAD } from "../fonts";
 import { GradientBackground } from "../components/gradient-background";
@@ -7,6 +7,9 @@ import { Resources } from "../resources";
 import { GameColor } from "../game-color";
 import { BottomMenu } from "../components/bottom-menu";
 import { ElementFactory } from "../components/element-factory";
+import { PlayAudioComponent } from "../components/play-audio-component";
+import { CenterMenu, DIRECTION_HORIZONTAL } from "../components/center-menu";
+import { LaunchRecordButton } from "../components/launch-record-button";
 
 interface AudioSelectLevelData {
   sceneName: string
@@ -21,6 +24,12 @@ export class AudioSelectLevel extends Scene {
   private _headerBackground?: GradientBackground
   private _footerBackground?: GradientBackground
   private _bottomMenu?: BottomMenu
+  private _centerMenu?: CenterMenu
+  private _playDefaultAudio = new PlayAudioComponent()
+  private _playRecordedAudio = new PlayAudioComponent()
+  private _recordAudio = new LaunchRecordButton()
+  private _recordedSound?: Sound
+  private _selectedAudio?: Sound
 
   get config(): SetupStep {
     return setupSteps.find(s => s.sceneName === this.name) || defaultSetupStep
@@ -76,8 +85,20 @@ export class AudioSelectLevel extends Scene {
     if (sceneName === undefined) sceneName = defaultSetupStep.sceneName
 
     this.name = sceneName
-    this._bottomMenu = new BottomMenu()
     this.titleLabel.text = this.config.title
+
+    this._centerMenu = new CenterMenu({ direction: DIRECTION_HORIZONTAL })
+    this._centerMenu.setup((factory: ElementFactory) => {
+      const elements: HTMLElement[] = []
+
+      elements.push(this._playDefaultAudio)
+      elements.push(this._playRecordedAudio)
+      elements.push(this._recordAudio)
+
+      return elements
+    })
+
+    this._bottomMenu = new BottomMenu()
     this._bottomMenu.setup((factory: ElementFactory) => {
       const elements: HTMLElement[] = []
 
@@ -97,11 +118,20 @@ export class AudioSelectLevel extends Scene {
         this.imageContainer.graphics.use(sprite)
       }
     })
+
+    if (this.config.sound) {
+      this._playDefaultAudio.file = this.config.sound
+      this._selectedAudio = this._selectedAudio || this.config.sound
+    }
   }
 
   override onDeactivate(context: SceneActivationContext) {
     if (this._bottomMenu) {
       this._bottomMenu.teardown()
+    }
+
+    if (this._centerMenu) {
+      this._centerMenu.teardown()
     }
   }
 
@@ -118,6 +148,16 @@ export class AudioSelectLevel extends Scene {
     this._border.pos.setTo(halfWidth, halfHeight - 50)
     this.titleLabel.pos.x = halfWidth
     this.imageContainer.pos.setTo(halfWidth, halfHeight - 50)
+
+    if (this._playRecordedAudio && this._recordedSound) {
+      this._playRecordedAudio.style.display = 'auto'
+    } else {
+      this._playRecordedAudio.style.display = 'none'
+    }
+
+    this._selectedAudio && [this._playDefaultAudio, this._playRecordedAudio].forEach((component) => {
+      component.selected = this._selectedAudio === component.file
+    })
   }
 
   onNextPage = () => {

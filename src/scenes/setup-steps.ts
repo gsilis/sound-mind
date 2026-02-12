@@ -1,4 +1,4 @@
-import { Actor, ImageSource } from "excalibur";
+import { Actor, ImageSource, Resource, Sound } from "excalibur";
 import { Resources } from "../resources";
 import { Explosion } from "../components/explosion";
 
@@ -6,6 +6,7 @@ export type SetupStep = {
   sceneName: string,
   title: string,
   images: (ImageSource | Actor)[],
+  sound?: Sound,
 }
 
 export const defaultSetupStep: SetupStep = {
@@ -20,14 +21,15 @@ export const setupSteps: SetupStep[] = [
     title: 'Shots',
     images: [
       Resources.Shots,
-    ]
+    ],
+    sound: Resources.SoundShoot,
   },
   {
     sceneName: 'audioMissile',
     title: 'Missile',
     images: [
       Resources.Missile,
-    ]
+    ],
   },
   {
     sceneName: 'audioShip',
@@ -43,7 +45,8 @@ export const setupSteps: SetupStep[] = [
     images: [
       Resources.Plane,
       Resources.PlaneFlameMove,
-    ]
+    ],
+    sound: Resources.SoundFly,
   },
   {
     sceneName: 'audioBoost',
@@ -51,13 +54,15 @@ export const setupSteps: SetupStep[] = [
     images: [
       Resources.Plane,
       Resources.PlaneFlameBoost,
-    ]
+    ],
+    sound: Resources.SoundBoost,
   },
   {
     sceneName: 'audioExplosion',
     title: 'Explosion',
     images: [
       new Explosion({ loop: true }),
-    ]
+    ],
+    sound: Resources.SoundExplode,
   }
 ]

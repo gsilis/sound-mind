@@ -1,4 +1,4 @@
-import { ImageSource } from "excalibur";
+import { ImageSource, Sound } from "excalibur";
 import { Loader } from "./loader";
 
 // It is convenient to put your resources in one place
@@ -21,6 +21,12 @@ export const Resources = {
   PlaneFlameBoost: new ImageSource("./images/flame-boost.png"),
   Ship: new ImageSource("./images/ship.png"),
   Shots: new ImageSource("./images/shots.png"),
+
+  SoundBoost: new Sound("./sounds/boost.ogg"),
+  SoundExplode: new Sound("./sounds/explode.ogg"),
+  SoundFly: new Sound("./sounds/fly.ogg"),
+  SoundMove: new Sound("./sounds/move.ogg"),
+  SoundShoot: new Sound("./sounds/shoot.ogg"),
 } as const; // the 'as const' is a neat typescript trick to get strong typing on your resources. 
 // So when you type Resources.Sword -> ImageSource
 
