@@ -16,6 +16,7 @@ import { GameData } from "../game-data";
 import { TemporaryItemManager } from "../components/temporary-item-manager";
 import { Explosion } from "../components/explosion";
 import { Hit } from "../components/hit";
+import { ShipMovingManager } from "../utilities/ship-moving-manager";
 
 const gameData = GameData.getInstance()
 
@@ -44,6 +45,7 @@ export class Play extends Scene {
   backgroundOffset = 0
   wrappedCreateShot?: CallableFunction
   wrappedShipContainer?: CallableFunction
+  movingManager = new ShipMovingManager(this)
 
   override onInitialize(engine: Engine): void {
     this._pauseLabel.font.textAlign = TextAlign.Center
@@ -150,6 +152,8 @@ export class Play extends Scene {
     this.scoreLabel.pos.y = 10
     this.score.pos.x = this.scoreLabel.getTextWidth() + 10
     this.score.pos.y = this.scoreLabel.pos.y
+
+    this.movingManager.update(engine, elapsedMs)
   }
 
   override onActivate(context: SceneActivationContext<unknown, undefined>): void {

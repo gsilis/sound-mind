@@ -1,10 +1,11 @@
-import { BoundingBox, Engine, Keys } from "excalibur";
+import { BoundingBox, Engine, Keys, Sound } from "excalibur";
 import { ControlScheme } from "./control-scheme";
 import { ControlStateMachine } from "./control-state-machine";
 import { Play } from "../scenes/play";
 import { between } from "../utilities/random";
 import { GameData } from "../game-data";
 import { FLY_BOOST, FLY_IDLE, FLY_STANDARD, MOVE_LEFT, MOVE_RIGHT, MOVE_STRAIGHT } from "../player";
+import { ToggleSound } from "../utilities/toggle-sound";
 
 const gameData = GameData.getInstance()
 
@@ -34,6 +35,7 @@ export class PlayScheme implements ControlScheme<Play> {
     if (gameData.hp === 0) {
       stateMachine.transitionTo('game-over')
       gameData.stop()
+      this.stopAllSounds()
       return
     }
 
@@ -42,10 +44,16 @@ export class PlayScheme implements ControlScheme<Play> {
     if (isBoosting && gameData.boost.availableFor(elapsed)) {
       gameData.boost.spend(elapsed)
       scene.player.flyState = FLY_BOOST
+      gameData.sounds.boosting.playing = true
+      gameData.sounds.flying.playing = false
     } else if (isMoving) {
       scene.player.flyState = FLY_STANDARD
+      gameData.sounds.boosting.playing = false
+      gameData.sounds.flying.playing = true
     } else {
       scene.player.flyState = FLY_IDLE
+      gameData.sounds.flying.playing = false
+      gameData.sounds.boosting.playing = false
     }
 
     if (left) {
@@ -105,6 +113,24 @@ export class PlayScheme implements ControlScheme<Play> {
         if (actor.pos.y < 0) {
           scene.remove(actor)
         }
+      }
+    })
+  }
+
+  private stopAllSounds() {
+    [
+      gameData.sounds.boost,
+      gameData.sounds.boosting,
+      gameData.sounds.explode,
+      gameData.sounds.fly,
+      gameData.sounds.flying,
+      gameData.sounds.move,
+      gameData.sounds.shoot,
+    ].forEach((sound: Sound | ToggleSound) => {
+      if (sound instanceof ToggleSound) {
+        sound.playing = false
+      } else {
+        sound.stop()
       }
     })
   }
