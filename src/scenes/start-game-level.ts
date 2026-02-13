@@ -34,7 +34,7 @@ export class StartGameLevel extends Scene {
     this._menu = new CenterMenu()
     this._menu.setup((factory: ElementFactory) => {
       return [
-        factory.createPrimaryButton('Play', this.onStart),
+        factory.createPrimaryButton('Set Sounds and Play', this.onStart),
         factory.createSpacer(),
         factory.createCheckbox('Use default audio', this.onUseDefaults)
       ]

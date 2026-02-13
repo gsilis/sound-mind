@@ -27,7 +27,11 @@ const game = new Engine({
       scene: AudioSelectLevel,
       transitions: { ...transitions }
     },
-    audioShip: {
+    audioIdle: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioFly: {
       scene: AudioSelectLevel,
       transitions: { ...transitions }
     },
@@ -36,6 +40,14 @@ const game = new Engine({
       transitions: { ...transitions }
     },
     audioExplosion: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioDamage: {
+      scene: AudioSelectLevel,
+      transitions: { ...transitions }
+    },
+    audioGameOver: {
       scene: AudioSelectLevel,
       transitions: { ...transitions }
     },

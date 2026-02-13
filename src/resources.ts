@@ -24,6 +24,7 @@ export const Resources = {
 
   SoundBoost: new Sound("./sounds/boost.ogg"),
   SoundDamage: new Sound("./sounds/damage.ogg"),
+  SoundIdle: new Sound("./sounds/idle.ogg"),
   SoundExplode: new Sound("./sounds/explode.ogg"),
   SoundFly: new Sound("./sounds/fly.ogg"),
   SoundGameOver: new Sound("./sounds/game-over.ogg"),

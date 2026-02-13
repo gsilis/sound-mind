@@ -25,12 +25,21 @@ export const setupSteps: SetupStep[] = [
     sound: Resources.SoundShoot,
   },
   {
-    sceneName: 'audioShip',
-    title: 'Ship',
+    sceneName: 'audioIdle',
+    title: 'Ship Idle',
     images: [
       Resources.Plane,
       Resources.PlaneFlame,
     ],
+  },
+  {
+    sceneName: 'audioFly',
+    title: 'Fly',
+    images: [
+      Resources.Plane,
+      Resources.PlaneFlameMove,
+    ],
+    sound: Resources.SoundFly,
   },
   {
     sceneName: 'audioBoost',
@@ -48,5 +57,17 @@ export const setupSteps: SetupStep[] = [
       new Explosion({ loop: true }),
     ],
     sound: Resources.SoundExplode,
+  },
+  {
+    sceneName: 'audioDamage',
+    title: 'Damage Received',
+    images: [],
+    sound: Resources.SoundDamage,
+  },
+  {
+    sceneName: 'audioGameOver',
+    title: 'Game Over',
+    images: [],
+    sound: Resources.SoundGameOver,
   }
 ]

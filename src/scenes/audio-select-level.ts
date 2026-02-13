@@ -22,7 +22,8 @@ interface AudioSelectLevelData {
 
 export class AudioSelectLevel extends Scene {
   private name: string = ''
-  private titleLabel: Label = new Label({ font: FONT_SUBHEAD, color: Color.White })
+  private titleLabel = gameData.titleLabelFactory.create('')
+  private instructionsLabel = gameData.labelFactory.create('Select a sound effect or record your own.')
   private imageContainer: Actor = new Actor()
   private _background?: GradientBackground
   private _border = ActorCreator.fromImage(Resources.IconBox)
@@ -86,7 +87,6 @@ export class AudioSelectLevel extends Scene {
     super.onActivate(context)
     let sceneName = context.data?.sceneName
     if (sceneName === undefined) sceneName = defaultSetupStep.sceneName
-    console.log(`ACTIVATE ${sceneName}`)
 
     this.add(this.titleLabel)
     this.add(this.imageContainer)
@@ -132,11 +132,12 @@ export class AudioSelectLevel extends Scene {
       this._playDefaultAudio.file = this.config.sound
       this._selectedAudio = this._selectedAudio || this.config.sound
     }
+
+    this.add(this.instructionsLabel)
   }
 
   override onDeactivate(context: SceneActivationContext) {
     super.onDeactivate(context)
-    console.log(`DEACTIVATE ${this.name}`)
     if (this._recordAudio) {
       this._recordAudio.removeEventListener('click', this.onRecord)
     }
@@ -144,6 +145,7 @@ export class AudioSelectLevel extends Scene {
     this.imageContainer.removeAllChildren()
     this.remove(this.titleLabel)
     this.remove(this.imageContainer)
+    this.remove(this.instructionsLabel)
   }
 
   override onPreDraw(ctx: ExcaliburGraphicsContext, elapsed: number): void {
@@ -159,6 +161,8 @@ export class AudioSelectLevel extends Scene {
     this._border.pos.setTo(halfWidth, halfHeight - 50)
     this.titleLabel.pos.x = halfWidth
     this.imageContainer.pos.setTo(halfWidth, halfHeight - 50)
+    this.instructionsLabel.pos.y = this.titleLabel.pos.y + 65
+    this.instructionsLabel.pos.x = halfWidth - 140
 
     if (this._playRecordedAudio && this._recordedSound) {
       this._playRecordedAudio.style.display = 'auto'
@@ -181,7 +185,6 @@ export class AudioSelectLevel extends Scene {
       const nextSceneName = this.nextPageConfig.sceneName
       this.engine.goToScene(nextSceneName, { sceneActivationData: { sceneName: nextSceneName } })
     } else {
-      console.log(`Report!`)
       this.engine.goToScene('audioReport')
     }
   }
