@@ -63,5 +63,6 @@ export class CenterMenu extends Actor implements Menu {
   teardown(): void {
     GameData.getInstance().elementFactory.clear()
     removeFromParent(this._container)
+    this._containerElement = undefined
   }
 }

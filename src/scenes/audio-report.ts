@@ -13,6 +13,7 @@ export class AudioReport extends Scene {
   }
 
   override onActivate(context: SceneActivationContext<unknown, undefined>): void {
+    super.onActivate(context)
     if (!this._bottomMenu) return
 
     this._bottomMenu.setup((elementFactory: ElementFactory) => {
@@ -27,6 +28,7 @@ export class AudioReport extends Scene {
   }
 
   override onDeactivate(context: SceneActivationContext) {
+    super.onDeactivate(context)
     if (!this._bottomMenu) return
 
     this._bottomMenu.teardown()
