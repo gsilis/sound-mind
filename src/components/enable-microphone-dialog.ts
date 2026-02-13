@@ -5,6 +5,11 @@ export class EnableMicrophoneDialog extends HTMLElement {
   private _enableButton?: HTMLButtonElement | null
   private _cancelButton?: HTMLButtonElement | null
 
+  constructor() {
+    super()
+    this.classList.add('dialog-container')
+  }
+
   connectedCallback() {
     const template = document.querySelector<HTMLTemplateElement>(EnableMicrophoneDialog.TEMPLATE_NAME)
 
@@ -12,8 +17,7 @@ export class EnableMicrophoneDialog extends HTMLElement {
       throw new Error(`Template with selector '${EnableMicrophoneDialog.TEMPLATE_NAME}' is missing from the DOM.`)
     }
 
-    const clone = template.cloneNode()
-    this.append(clone)
+    this.innerHTML = template.innerHTML
 
     this._dialog = this.querySelector('dialog')
     this._enableButton = this.querySelector('button.trigger-prompt')
