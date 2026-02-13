@@ -12,7 +12,6 @@ import { CenterMenu, DIRECTION_HORIZONTAL } from "../components/center-menu";
 import { LaunchRecordButton } from "../components/launch-record-button";
 import { GameData } from "../game-data";
 import { EnableMicrophoneDialog } from "../components/enable-microphone-dialog";
-import { RecordAudioComponent } from "../components/record-audio-component";
 import { RecordAudioDialog } from "../components/record-audio-dialog";
 
 const gameData = GameData.getInstance()
@@ -142,6 +141,7 @@ export class AudioSelectLevel extends Scene {
       this._recordAudio.removeEventListener('click', this.onRecord)
     }
 
+    this.imageContainer.removeAllChildren()
     this.remove(this.titleLabel)
     this.remove(this.imageContainer)
   }
