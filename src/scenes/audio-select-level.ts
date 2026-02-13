@@ -113,7 +113,7 @@ export class AudioSelectLevel extends Scene {
 
       elements.push(factory.createButton('Back', this.onPreviousPage))
       elements.push(factory.createSpacer())
-      elements.push(factory.createPrimaryButton('Next', this.onNextPage))
+      elements.push(factory.createPrimaryButton(this.hasNextPage ? 'Next' : 'Play!', this.onNextPage))
 
       return elements
     })
@@ -185,7 +185,8 @@ export class AudioSelectLevel extends Scene {
       const nextSceneName = this.nextPageConfig.sceneName
       this.engine.goToScene(nextSceneName, { sceneActivationData: { sceneName: nextSceneName } })
     } else {
-      this.engine.goToScene('audioReport')
+      this.engine.goToScene('game')
+      gameData.start()
     }
   }
 

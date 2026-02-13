@@ -3,7 +3,6 @@ import { loader } from "./resources";
 import { Play } from "./scenes/play";
 import { AudioSelectLevel } from "./scenes/audio-select-level";
 import { StartGameLevel } from "./scenes/start-game-level";
-import { AudioReport } from "./scenes/audio-report";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
@@ -49,10 +48,6 @@ const game = new Engine({
     },
     audioGameOver: {
       scene: AudioSelectLevel,
-      transitions: { ...transitions }
-    },
-    audioReport: {
-      scene: AudioReport,
       transitions: { ...transitions }
     },
     game:  Play,
