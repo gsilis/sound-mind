@@ -12,6 +12,8 @@ type CenterMenuOpts = { direction?: ItemDirection } & ActorArgs
 
 export class CenterMenu extends Actor implements Menu {
   private _containerElement?: HTMLDivElement
+  private _elements: HTMLElement[] = []
+  private _disabled: boolean = false
   private _direction: ItemDirection = DIRECTION_VERTICAL
 
   private get _container(): HTMLDivElement {
@@ -33,6 +35,16 @@ export class CenterMenu extends Actor implements Menu {
     this._container.style.flexDirection = this._direction === DIRECTION_HORIZONTAL ? 'row' : 'column'
   }
 
+  get disabled() { return this._disabled }
+  set disabled(value: boolean) {
+    this._disabled = value
+    this._elements.forEach((element) => {
+      if (element instanceof HTMLButtonElement) {
+        element.disabled = this._disabled
+      }
+    })
+  }
+
   constructor({ direction = DIRECTION_VERTICAL, ...actorArgs }: CenterMenuOpts = {}) {
     super(actorArgs)
 
@@ -41,9 +53,8 @@ export class CenterMenu extends Actor implements Menu {
 
   setup(setupCallback: (factory: ElementFactory) => HTMLElement[]) {
     try {
-      const elements = setupCallback.apply(undefined, [GameData.getInstance().elementFactory])
-      
-      elements.forEach(el => {
+      this._elements = setupCallback.apply(undefined, [GameData.getInstance().elementFactory])
+      this._elements.forEach(el => {
         this._container.append(el)
       })
     } catch (err) {}

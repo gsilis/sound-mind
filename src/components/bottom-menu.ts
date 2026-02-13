@@ -6,6 +6,8 @@ import { removeFromParent } from "../utilities/dom";
 
 export class BottomMenu extends Actor implements Menu {
   private _containerElement?: HTMLDivElement
+  private _disabled: boolean = false
+  private _elements: HTMLElement[] = []
   private get _container(): HTMLDivElement {
     if (!this._containerElement) {
       this._containerElement = document.createElement('div')
@@ -19,11 +21,20 @@ export class BottomMenu extends Actor implements Menu {
     return this._containerElement
   }
 
+  get disabled() { return this._disabled }
+  set disabled(value: boolean) {
+    this._disabled = value
+    this._elements.forEach((element) => {
+      if (element instanceof HTMLButtonElement) {
+        element.disabled = this._disabled
+      }
+    })
+  }
+
   setup(setupCallback: (factory: ElementFactory) => HTMLElement[]): void {
     try {
-      const elements = setupCallback.apply(undefined, [GameData.getInstance().elementFactory])
-
-      elements.forEach(el => {
+      this._elements = setupCallback.apply(undefined, [GameData.getInstance().elementFactory])
+      this._elements.forEach(el => {
         this._container.append(el)
       })
     } catch (err) {}

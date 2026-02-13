@@ -33,7 +33,7 @@ export class AudioReport extends Scene {
   }
 
   private onBack = () => {
-    this.engine.goToScene('audioExplosion')
+    this.engine.goToScene('audioExplosion', { sceneActivationData: { sceneName: 'audioExplosion' } })
   }
 
   private onStart = () => {

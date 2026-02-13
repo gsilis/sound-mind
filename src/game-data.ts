@@ -1,7 +1,7 @@
 import { ElementFactory } from "./components/element-factory"
 import { LabelFactory } from "./utilities/label-factory"
 import { FONT_STANDARD, FONT_TITLE } from "./fonts"
-import { Color, SoundManager } from "excalibur"
+import { Color } from "excalibur"
 import { Boost } from "./boost"
 import { ModalManager } from "./utilities/modal-manager"
 import { GameSounds } from "./game-sounds"

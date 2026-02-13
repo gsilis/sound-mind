@@ -47,6 +47,13 @@
     box-sizing: border-box;
     position: absolute;
     display: flex;
+    transition: all;
+    transition-duration: 1s;
+    opacity: 1;
+
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .menu .spacer {
@@ -105,19 +112,178 @@
     position: absolute;
     display: grid;
     grid-template-columns: 1fr 400px 1fr;
-    grid-template-rows: 1fr 300px 1fr;
+    grid-template-rows: 1fr 400px 1fr;
     background: rgba(0, 0, 0, 0.4);
   }
 
   dialog {
     margin: 0;
+    padding: 0;
     width: 400px;
     height: 300px;
     grid-row: 2;
     grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1em;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    transition: all;
+    transition-duration: 0.3s;
+    scale: 1;
+    opacity: 1;
+
+    @starting-style {
+      scale: 0.8;
+      opacity: 0;
+    }
   }
 
   dialog::backdrop {
     background-color: black;
+  }
+
+  dialog > * {
+    margin: 0;
+    padding: 15px 20px;
+  }
+
+  dialog > header {
+    flex: 0;
+  }
+
+  dialog > header h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  dialog > section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  dialog > section p {
+    margin: 0 0 15px;
+  }
+
+  dialog > footer {
+    --background-color: black;
+
+    flex: 0;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    border-top: 1px solid oklch(from var(--background-color) l c h / calc(alpha - 0.8));
+    background: oklch(from var(--background-color) l c h / calc(alpha - 0.9));
+  }
+
+  dialog > footer .spacer {
+    flex: 1;
+  }
+
+  dialog > footer button {
+    --grad-from: white;
+    --grad-to: oklch(from var(--grad-from) calc(l - 0.3) c h);
+    --text-color: black;
+
+    padding: 5px 10px;
+    background: linear-gradient(to bottom, var(--grad-from), var(--grad-to));
+    color: var(--text-color);
+    border-radius: 5px;
+    border: var(--grad-to);
+    cursor: pointer;
+  }
+
+  dialog > footer button:hover {
+    --grad-to: oklch(from var(--grad-from) calc(l - 0.2) c h);
+  }
+
+  dialog > footer button:active {
+    --grad-to: oklch(from var(--grad-from) calc(l - 0.4) c h);
+  }
+
+  dialog > footer button:disabled {
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  dialog > footer button.primary {
+    --grad-from: rgba(0, 150, 255, 1);
+    --text-color: white;
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .animated {
+    animation: rotate 1s linear infinite;
+    scale: 1;
+    opacity: 1;
+    transition: all;
+    display: inline-block;
+
+    @starting-style {
+      scale: 0.8;
+      opacity: 0;
+    }
+  }
+
+  .dialog-icon {
+    --width: 50px;
+    --height: 50px;
+
+    border-radius: 2em;
+    position: relative;
+    width: var(--width);
+    height: var(--height);
+    margin-bottom: 15px;
+  }
+
+  .dialog-icon:after {
+    content: "";
+    width: calc(var(--width) / 2);
+    height: calc(var(--height) / 2);
+    display: inline-block;
+    border-radius: 2em;
+    top: calc(var(--height) / 4);
+    left: calc(var(--width) / 4);
+    font-size: 22px;
+    position: absolute;
+  }
+
+  .confirmed {
+    background: linear-gradient(to bottom, oklch(from darkgreen calc(l + 0.2) c h), darkgreen);
+  }
+
+  .confirmed:after {
+    content: "✓";
+    color: darkgreen;
+    background-color: white;
+    text-align: center;
+  }
+
+  .declined {
+    background: linear-gradient(to bottom, oklch(from darkred calc(l + 0.2) c h), darkred);
+  }
+
+  .declined:after {
+    content: "ⅹ";
+    color: darkred;
+    background-color: white;
+    text-align: center;
+  }
+
+  .waiting {
+    background: conic-gradient(
+      lightgray 180deg, black
+    );
+  }
+
+  .waiting:after {
+    background: white;
   }
 }

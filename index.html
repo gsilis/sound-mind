@@ -14,24 +14,47 @@
     <script type="module" src="./src/main.ts"></script>
     <template id="enable-audio">
       <dialog title="Enable Audio">
-        <p>You'll have to enable your microphone to record audio. Click "Enable" to trigger the browser prompt.</p>
-        <button class="trigger-prompt">Enable</button>
-        <button class="cancel">Nevermind</button>
+        <header>
+          <h1>Enable Microphone</h1>
+        </header>
+        <section>
+          <div class="intro">
+            <p>You'll have to enable your microphone to record audio. Click "Enable" to trigger the browser prompt.</p>
+            <p>Anything you record is just stored in memory, and should be erased after you refresh the page.</p>
+          </div>
+          <span class="waiting animated dialog-icon"></span>
+          <span class="confirmed dialog-icon"></span>
+          <span class="declined dialog-icon"></span>
+          <div class="error">
+            <p>If you've already blocked access to the microphone, you will need to clear that setting in order to trigger the enable prompt.</p>
+          </div>
+        </section>
+        <footer>
+          <button class="cancel" title="Do not enable audio">Nevermind</button>
+          <button class="trigger-prompt primary" title="Click to prompt">Enable</button>
+        </footer>
       </dialog>
     </template>
     <template id="record-audio">
-      <div>
-        Visualizer
-      </div>
-      <p>Press and hold the record button. Release to stop recording.</p>
-      <div>
-        <button class="record-audio">⏺️</button>
-        <button class="play-audio">▶️</button>
-      </div>
-      <div>
-        <button class="cancel-dialog">Go back</button>
-        <button class="confirm-dialog">Use this sound</button>
-      </div>
+      <dialog title="Record Audio">
+        <header>
+          <h1>Record a Clip</h1>
+        </header>
+        <section>
+          <div>
+            Visualizer
+          </div>
+          <p>Press and hold the record button. Release to stop recording.</p>
+          <div>
+            <button class="record-audio">⏺️</button>
+            <button class="play-audio">▶️</button>
+          </div>
+        </section>
+        <footer>
+          <button class="cancel-dialog">Go back</button>
+          <button class="confirm-dialog primary">Use this sound</button>
+        </footer>
+      </dialog>
     </template>
   </body>
 </html>

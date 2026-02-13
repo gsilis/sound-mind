@@ -25,28 +25,12 @@ export const setupSteps: SetupStep[] = [
     sound: Resources.SoundShoot,
   },
   {
-    sceneName: 'audioMissile',
-    title: 'Missile',
-    images: [
-      Resources.Missile,
-    ],
-  },
-  {
     sceneName: 'audioShip',
     title: 'Ship',
     images: [
       Resources.Plane,
       Resources.PlaneFlame,
     ],
-  },
-  {
-    sceneName: 'audioMove',
-    title: 'Move',
-    images: [
-      Resources.Plane,
-      Resources.PlaneFlameMove,
-    ],
-    sound: Resources.SoundFly,
   },
   {
     sceneName: 'audioBoost',
