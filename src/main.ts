@@ -31,10 +31,6 @@ const game = new Engine({
       scene: AudioSelectLevel,
       transitions: { ...transitions }
     },
-    audioMove: {
-      scene: AudioSelectLevel,
-      transitions: { ...transitions }
-    },
     audioBoost: {
       scene: AudioSelectLevel,
       transitions: { ...transitions }

@@ -20,6 +20,7 @@ export class PlayerCollisions {
     if (ship.name === 'ship' && player.name === 'player' && !player.isInvincible) {
       gameData.hp = ship.damageToPlayer
       player.healthState = HEALTH_HIT
+      gameData.sounds.damage.play()
     }
   }
 }

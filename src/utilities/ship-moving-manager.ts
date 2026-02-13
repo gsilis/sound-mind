@@ -6,8 +6,6 @@ const gameData = GameData.getInstance()
 
 export class ShipMovingManager {
   private containerScene: Scene
-  private soundsTarget = 0
-  private soundsRunning = 0
 
   constructor(scene: Scene) {
     this.containerScene = scene
@@ -23,17 +21,6 @@ export class ShipMovingManager {
       ship.age += elapsed
 
       ship.pos.y += (ship.speed * elapsed)
-
-      this.addSound()
-    })
-  }
-
-  private addSound() {
-    if (this.soundsRunning >= this.soundsTarget) return
-
-    this.soundsRunning += 1
-    gameData.sounds.move.play().then(() => {
-      this.soundsRunning -= 1
     })
   }
 }

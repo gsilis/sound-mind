@@ -34,6 +34,7 @@ export class PlayScheme implements ControlScheme<Play> {
 
     if (gameData.hp === 0) {
       stateMachine.transitionTo('game-over')
+      gameData.sounds.gameOver.play()
       gameData.stop()
       this.stopAllSounds()
       return
@@ -124,8 +125,8 @@ export class PlayScheme implements ControlScheme<Play> {
       gameData.sounds.explode,
       gameData.sounds.fly,
       gameData.sounds.flying,
-      gameData.sounds.move,
       gameData.sounds.shoot,
+      gameData.sounds.damage,
     ].forEach((sound: Sound | ToggleSound) => {
       if (sound instanceof ToggleSound) {
         sound.playing = false
