@@ -34,7 +34,7 @@ export class AudioSelectLevel extends Scene {
   private _playDefaultAudio = new PlayAudioComponent()
   private _playRecordedAudio = new PlayAudioComponent()
   private _recordAudio = new LaunchRecordButton()
-  private _recordedSound?: Sound
+  private _recordedSound?: Sound | null
   private _selectedAudio?: Sound
 
   get config(): SetupStep {
@@ -133,6 +133,9 @@ export class AudioSelectLevel extends Scene {
       this._selectedAudio = this._selectedAudio || this.config.sound
     }
 
+    this._playDefaultAudio.addEventListener('click', this.onDefaultAudioClick)
+    this._playRecordedAudio.addEventListener('click', this.onRecordedAudioClick)
+
     this.add(this.instructionsLabel)
   }
 
@@ -141,6 +144,8 @@ export class AudioSelectLevel extends Scene {
     if (this._recordAudio) {
       this._recordAudio.removeEventListener('click', this.onRecord)
     }
+    this._playDefaultAudio.removeEventListener('click',this.onDefaultAudioClick)
+    this._playRecordedAudio.removeEventListener('click',this.onRecordedAudioClick)
 
     this.imageContainer.removeAllChildren()
     this.remove(this.titleLabel)
@@ -165,7 +170,7 @@ export class AudioSelectLevel extends Scene {
     this.instructionsLabel.pos.x = halfWidth - 140
 
     if (this._playRecordedAudio && this._recordedSound) {
-      this._playRecordedAudio.style.display = 'auto'
+      this._playRecordedAudio.style.display = 'inline-block'
     } else {
       this._playRecordedAudio.style.display = 'none'
     }
@@ -180,6 +185,10 @@ export class AudioSelectLevel extends Scene {
     if (this._centerMenu) this._centerMenu.teardown()
     if (this._centerMenu) this._centerMenu.disabled = true
     if (this._bottomMenu) this._bottomMenu.disabled = true
+
+    if (this.config.onSelectAudio && this._selectedAudio) {
+      this.config.onSelectAudio(this._selectedAudio)
+    }
 
     if (this.hasNextPage) {
       const nextSceneName = this.nextPageConfig.sceneName
@@ -244,10 +253,30 @@ export class AudioSelectLevel extends Scene {
   }
 
   onSelectRecording = (event: Event) => {
+    if (!this._playRecordedAudio) return
+
     const custom = event as CustomEvent
     if (!event.target) return
+    const soundClip = custom.detail as Sound | null
 
-    console.log('Selectd recording', event)
+    this._playRecordedAudio.file = soundClip
+    this._recordedSound = soundClip
+    
+    if (soundClip) {
+      this._selectedAudio = soundClip
+    } else {
+      this._selectedAudio = this.config.sound
+    }
+
+    gameData.modal.show(null)
+  }
+
+  private onDefaultAudioClick = () => {
+    this._selectedAudio = this.config.sound
+  }
+
+  private onRecordedAudioClick = () => {
+    if (this._recordedSound) this._selectedAudio = this._recordedSound
   }
 
   private showRecordModal = () => {

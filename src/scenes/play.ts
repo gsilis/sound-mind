@@ -128,6 +128,8 @@ export class Play extends Scene {
 
       this._pauseLabel.pos.y = (height / 2) - 60
       this._pauseInstructions.pos.y = (height / 2)
+      
+      gameData.sounds.idling.playing = false
     } else {
       this.actors.includes(this._pauseLabel) && this.remove(this._pauseLabel)
       this.actors.includes(this._pauseInstructions) && this.remove(this._pauseInstructions)
@@ -142,6 +144,8 @@ export class Play extends Scene {
 
       this._gameOverLabel.pos.y = (height / 2) - 60
       this._gameOverInstructions.pos.y = height / 2
+
+      gameData.sounds.idling.playing = false
     } else {
       this.actors.includes(this._gameOverLabel) && this.remove(this._gameOverLabel)
       this.actors.includes(this._gameOverInstructions) && this.remove(this._gameOverInstructions)

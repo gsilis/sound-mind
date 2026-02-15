@@ -1,19 +1,19 @@
-import { AudioFile } from "./audio-file"
+import { GameData } from "../game-data"
 
 export class RecorderFactory {
-  private _stream?: MediaStream
+  private _gameData: GameData
 
-  setup() {
-    return navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((stream) => {
-      this._stream = stream
-    })
+  constructor(gameData: GameData) {
+    this._gameData = gameData
   }
 
-  create(): AudioFile {
-    if (!this._stream) {
+  create(): MediaRecorder {
+    const stream = this._gameData.mediaStream
+
+    if (!stream) {
       throw new Error('Media stream has not been initialized')
     }
 
-    return new AudioFile(new MediaRecorder(this._stream))
+    return new MediaRecorder(stream)
   }
 }

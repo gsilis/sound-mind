@@ -4,6 +4,9 @@ export class ToggleSound {
   private _sound: Sound
   private _playing = false
 
+  get clip() { return this._sound }
+  set clip(sound: Sound) { this._sound = sound }
+
   get playing() { return this._playing }
   set playing(val: boolean) {
     this._playing = val

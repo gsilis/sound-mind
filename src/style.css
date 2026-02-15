@@ -144,7 +144,11 @@
 
   dialog > * {
     margin: 0;
-    padding: 15px 20px;
+    padding: 15px 20px 0;
+  }
+
+  dialog > *:last-child {
+    padding-bottom: 15px;
   }
 
   dialog > header {
@@ -285,5 +289,26 @@
 
   .waiting:after {
     background: white;
+  }
+
+  .visualizer-space {
+    position: relative;
+    width: 100%;
+    min-height: 50px;
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+  }
+
+  .visualizer-space > * {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+  }
+
+  .visualizer-space counter-component {
+    font-size: 25px;
+    vertical-align: middle;
+    line-height: 50px;
   }
 }

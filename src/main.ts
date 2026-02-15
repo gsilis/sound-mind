@@ -3,6 +3,8 @@ import { loader } from "./resources";
 import { Play } from "./scenes/play";
 import { AudioSelectLevel } from "./scenes/audio-select-level";
 import { StartGameLevel } from "./scenes/start-game-level";
+import "./components/sound-visualizer-component"
+import "./components/counter-component"
 
 // Goal is to keep main.ts small and just enough to configure the engine
 

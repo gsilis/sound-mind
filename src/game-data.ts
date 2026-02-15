@@ -5,6 +5,7 @@ import { Color } from "excalibur"
 import { Boost } from "./boost"
 import { ModalManager } from "./utilities/modal-manager"
 import { GameSounds } from "./game-sounds"
+import { RecorderFactory } from "./utilities/recorder-factory"
 
 let _data: GameData
 
@@ -30,6 +31,7 @@ export class GameData {
   private _shots = SHOTS_AMOUNT
   private _modalManager = new ModalManager(document.body)
   private _sounds = new GameSounds()
+  private _recorder = new RecorderFactory(this)
 
   private constructor() {}
 
@@ -47,6 +49,10 @@ export class GameData {
 
   get sounds() {
     return this._sounds
+  }
+
+  get recorderFactory(): RecorderFactory {
+    return this._recorder
   }
 
   get elementFactory(): ElementFactory {

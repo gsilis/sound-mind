@@ -41,13 +41,14 @@
           <h1>Record a Clip</h1>
         </header>
         <section>
-          <div>
-            Visualizer
+          <div class="visualizer-space">
+            <sound-visualizer-component></sound-visualizer-component>
+            <counter-component></counter-component>
           </div>
           <p>Press and hold the record button. Release to stop recording.</p>
           <div>
-            <button class="record-audio">⏺️</button>
-            <button class="play-audio">▶️</button>
+            <button class="record-audio" title="Press and hold to record">⏺️</button>
+            <button class="play-audio" title="Play back saved clip">▶️</button>
           </div>
         </section>
         <footer>

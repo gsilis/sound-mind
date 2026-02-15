@@ -47,14 +47,17 @@ export class PlayScheme implements ControlScheme<Play> {
       scene.player.flyState = FLY_BOOST
       gameData.sounds.boosting.playing = true
       gameData.sounds.flying.playing = false
+      gameData.sounds.idling.playing = false
     } else if (isMoving) {
       scene.player.flyState = FLY_STANDARD
       gameData.sounds.boosting.playing = false
       gameData.sounds.flying.playing = true
+      gameData.sounds.idling.playing = false
     } else {
       scene.player.flyState = FLY_IDLE
       gameData.sounds.flying.playing = false
       gameData.sounds.boosting.playing = false
+      gameData.sounds.idling.playing = true
     }
 
     if (left) {
@@ -123,6 +126,7 @@ export class PlayScheme implements ControlScheme<Play> {
       gameData.sounds.boost,
       gameData.sounds.boosting,
       gameData.sounds.explode,
+      gameData.sounds.idling,
       gameData.sounds.fly,
       gameData.sounds.flying,
       gameData.sounds.shoot,

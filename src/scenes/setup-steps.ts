@@ -1,18 +1,23 @@
-import { Actor, ImageSource, Resource, Sound } from "excalibur";
+import { Actor, ImageSource, Sound } from "excalibur";
 import { Resources } from "../resources";
 import { Explosion } from "../components/explosion";
+import { GameData } from "../game-data";
+
+const gameData = GameData.getInstance()
 
 export type SetupStep = {
   sceneName: string,
   title: string,
   images: (ImageSource | Actor)[],
   sound?: Sound,
+  onSelectAudio: (sound: Sound) => void,
 }
 
 export const defaultSetupStep: SetupStep = {
   sceneName: 'start',
   title: 'N/A',
-  images: []
+  images: [],
+  onSelectAudio(_sound) {},
 }
 
 export const setupSteps: SetupStep[] = [
@@ -23,6 +28,9 @@ export const setupSteps: SetupStep[] = [
       Resources.Shots,
     ],
     sound: Resources.SoundShoot,
+    onSelectAudio(sound) {
+      gameData.sounds.shoot = sound
+    },
   },
   {
     sceneName: 'audioIdle',
@@ -31,6 +39,10 @@ export const setupSteps: SetupStep[] = [
       Resources.Plane,
       Resources.PlaneFlame,
     ],
+    sound: Resources.SoundIdle,
+    onSelectAudio(sound) {
+      gameData.sounds.idle = sound
+    },
   },
   {
     sceneName: 'audioFly',
@@ -40,6 +52,9 @@ export const setupSteps: SetupStep[] = [
       Resources.PlaneFlameMove,
     ],
     sound: Resources.SoundFly,
+    onSelectAudio(sound) {
+      gameData.sounds.fly = sound
+    },
   },
   {
     sceneName: 'audioBoost',
@@ -49,6 +64,9 @@ export const setupSteps: SetupStep[] = [
       Resources.PlaneFlameBoost,
     ],
     sound: Resources.SoundBoost,
+    onSelectAudio(sound) {
+      gameData.sounds.boost = sound
+    },
   },
   {
     sceneName: 'audioExplosion',
@@ -57,17 +75,26 @@ export const setupSteps: SetupStep[] = [
       new Explosion({ loop: true }),
     ],
     sound: Resources.SoundExplode,
+    onSelectAudio(sound) {
+      gameData.sounds.explode = sound
+    },
   },
   {
     sceneName: 'audioDamage',
     title: 'Damage Received',
     images: [],
     sound: Resources.SoundDamage,
+    onSelectAudio(sound) {
+      gameData.sounds.damage = sound
+    },
   },
   {
     sceneName: 'audioGameOver',
     title: 'Game Over',
     images: [],
     sound: Resources.SoundGameOver,
+    onSelectAudio(sound) {
+      gameData.sounds.gameOver = sound
+    },
   }
 ]

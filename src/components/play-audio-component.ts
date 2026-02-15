@@ -82,6 +82,13 @@ export class PlayAudioComponent extends HTMLElement {
     this.update()
   }
 
+  get disabled() { return this.playbackControl?.disabled || false }
+  set disabled(state: boolean) {
+    if (this.playbackControl) {
+      this.playbackControl.disabled = state
+    }
+  }
+
   get file(): Blob | Sound | null {
     return this._file
   }
@@ -94,6 +101,8 @@ export class PlayAudioComponent extends HTMLElement {
     } else {
       this.state = PlayAudioComponentState.EMPTY
     }
+
+    this.update()
   }
 
   get canPlay() { return this._state === PlayAudioComponentState.READY && !!this.file }
