@@ -5,7 +5,6 @@ import { Play } from "../scenes/play";
 import { between } from "../utilities/random";
 import { GameData } from "../game-data";
 import { FLY_BOOST, FLY_IDLE, FLY_STANDARD, MOVE_LEFT, MOVE_RIGHT, MOVE_STRAIGHT } from "../player";
-import { ToggleSound } from "../utilities/toggle-sound";
 
 const gameData = GameData.getInstance()
 
@@ -45,19 +44,19 @@ export class PlayScheme implements ControlScheme<Play> {
     if (isBoosting && gameData.boost.availableFor(elapsed)) {
       gameData.boost.spend(elapsed)
       scene.player.flyState = FLY_BOOST
-      gameData.sounds.boosting.playing = true
-      gameData.sounds.flying.playing = false
-      gameData.sounds.idling.playing = false
+      !gameData.sounds.boost.isPlaying() && gameData.sounds.boost.play()
+      gameData.sounds.fly.stop()
+      gameData.sounds.idle.stop()
     } else if (isMoving) {
       scene.player.flyState = FLY_STANDARD
-      gameData.sounds.boosting.playing = false
-      gameData.sounds.flying.playing = true
-      gameData.sounds.idling.playing = false
+      gameData.sounds.boost.stop()
+      !gameData.sounds.fly.isPlaying() && gameData.sounds.fly.play()
+      gameData.sounds.idle.stop()
     } else {
       scene.player.flyState = FLY_IDLE
-      gameData.sounds.flying.playing = false
-      gameData.sounds.boosting.playing = false
-      gameData.sounds.idling.playing = true
+      gameData.sounds.boost.stop()
+      gameData.sounds.fly.stop()
+      !gameData.sounds.idle.isPlaying() && gameData.sounds.idle.play()
     }
 
     if (left) {
@@ -124,19 +123,13 @@ export class PlayScheme implements ControlScheme<Play> {
   private stopAllSounds() {
     [
       gameData.sounds.boost,
-      gameData.sounds.boosting,
       gameData.sounds.explode,
-      gameData.sounds.idling,
+      gameData.sounds.idle,
       gameData.sounds.fly,
-      gameData.sounds.flying,
       gameData.sounds.shoot,
       gameData.sounds.damage,
-    ].forEach((sound: Sound | ToggleSound) => {
-      if (sound instanceof ToggleSound) {
-        sound.playing = false
-      } else {
-        sound.stop()
-      }
+    ].forEach((sound: Sound) => {
+      sound.stop()
     })
   }
 }
