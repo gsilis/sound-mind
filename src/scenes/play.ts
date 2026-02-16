@@ -12,11 +12,13 @@ import { ControlStateMachine } from "../control-schemes/control-state-machine";
 import { PlayScheme } from "../control-schemes/play-scheme";
 import { PauseScheme } from "../control-schemes/pause-scheme";
 import { GameOverScheme } from "../control-schemes/game-over-scheme";
-import { GameData } from "../game-data";
+import { COLUMNS, GameData, TILE_SIZE } from "../game-data";
 import { TemporaryItemManager } from "../components/temporary-item-manager";
 import { Explosion } from "../components/explosion";
 import { Hit } from "../components/hit";
 import { ShipMovingManager } from "../utilities/ship-moving-manager";
+import { WaveManager } from "../game-workers/wave-manager";
+import { WAVES } from "./waves";
 
 const gameData = GameData.getInstance()
 
@@ -44,8 +46,8 @@ export class Play extends Scene {
   backgroundCanvas?: Canvas
   backgroundOffset = 0
   wrappedCreateShot?: CallableFunction
-  wrappedShipContainer?: CallableFunction
   movingManager = new ShipMovingManager(this)
+  waves?: WaveManager
 
   override onInitialize(engine: Engine): void {
     this._pauseLabel.font.textAlign = TextAlign.Center
@@ -89,14 +91,19 @@ export class Play extends Scene {
     this.add(this.score)
 
     this.wrappedCreateShot = rateLimiter(this.addShot.bind(this), 500)
-    this.wrappedShipContainer = rateLimiter(this.addShip.bind(this), 20000)
 
     this._playerCollisions = new PlayerCollisions(this, this.player)
     this._shipCollisions = new ShipCollisions(this, this._explosionManager, this._hitManager)
+    this.waves = new WaveManager(this, gameData.titleLabelFactory.create('', Color.Yellow), this.createShipInColumn)
 
     this._controller.addState('play', new PlayScheme(), ['pause', 'game-over'])
     this._controller.addState('pause', new PauseScheme(), ['play'])
     this._controller.addState('game-over', new GameOverScheme(), ['play'])
+
+    this.scoreLabel.z = 1000
+    this.shotBalanceLabel.z = 1000
+    this.shotBalance.z = 1000
+    this.healthLevel.z = 1000
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
@@ -158,6 +165,7 @@ export class Play extends Scene {
     this.score.pos.y = this.scoreLabel.pos.y
 
     this.movingManager.update(engine, elapsedMs)
+    gameData.running && this.waves?.update(elapsedMs)
   }
 
   override onActivate(context: SceneActivationContext<unknown, undefined>): void {
@@ -186,6 +194,10 @@ export class Play extends Scene {
     }
 
     this._controller.transitionTo('play')
+    WAVES.forEach(wave => {
+      this.waves?.add(wave)
+    })
+    this.waves?.onComplete()
   }
 
   override onDeactivate(context: SceneActivationContext) {
@@ -197,6 +209,12 @@ export class Play extends Scene {
         this.remove(actor)
       }
     })
+
+    this.waves?.clear()
+  }
+
+  setState = (newState: string) => {
+    this._controller.transitionTo(newState)
   }
 
   private addShot() {
@@ -208,11 +226,13 @@ export class Play extends Scene {
     gameData.sounds.shoot.play()
   }
 
-  private addShip() {
-    const x = between(5, this.engine.screen.width - 5)
-    const y = -20
-    const ship = this._shipCreator.create(x, y, '')
+  private createShipInColumn = (column: number) => {
+    const gameSpaceWidth = COLUMNS * TILE_SIZE
+    const xOffset = (this.engine.canvas.width / 2) - (gameSpaceWidth / 2) + (TILE_SIZE / 2)
+    const x = (column * TILE_SIZE) + xOffset
+    const ship = this._shipCreator.create(x, -20, '')
     this._shipCollisions?.add(ship)
-    this.add(ship)
+
+    return ship
   }
 }

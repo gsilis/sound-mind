@@ -7,7 +7,8 @@ const gameData = GameData.getInstance()
 
 export class Shot extends Actor {
   private _speed: number
-  constructor(args: { speed: number } & ActorArgs) {
+  private _damage: number
+  constructor(args: { speed: number, damage: number } & ActorArgs) {
     const { height, width } = Resources.Shots
     super({
       ...args,
@@ -19,8 +20,11 @@ export class Shot extends Actor {
       height,
     })
     this._speed = args.speed
+    this._damage = args.damage
     this.addChild(ActorCreator.fromImage(Resources.Shots))
   }
+
+  get damage() { return this._damage }
 
   override onPreUpdate(engine: Engine, elapsed: number): void {
     if (!gameData.running) return

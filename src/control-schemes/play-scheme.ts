@@ -10,7 +10,6 @@ const gameData = GameData.getInstance()
 
 export class PlayScheme implements ControlScheme<Play> {
   update(scene: Play, stateMachine: ControlStateMachine<Play>, engine: Engine, elapsed: number): void {
-    const width = engine.screen.width
     const height = engine.screen.height
     const keyboard = engine.input.keyboard
     const space = keyboard.isHeld(Keys.Space)
@@ -97,11 +96,6 @@ export class PlayScheme implements ControlScheme<Play> {
 
     if (shoot && scene.wrappedCreateShot && gameData.shots > 0) {
       scene.wrappedCreateShot(scene.player?.pos.x || 0, scene.player?.pos.y || 0)
-    }
-
-    if (scene.wrappedShipContainer) {
-      const xCoordinate = between(20, width - 29)
-      scene.wrappedShipContainer(xCoordinate, -20, '')
     }
 
     const actors = [...scene.actors]

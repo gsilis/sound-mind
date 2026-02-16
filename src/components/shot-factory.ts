@@ -8,6 +8,6 @@ export class ShotFactory {
   create(x: number, y: number): Actor {
     gameData.shots -= 1
 
-    return new Shot({ speed: 200 / 1000, x, y })
+    return new Shot({ speed: 200 / 1000, x, y, damage: gameData.shotDamage })
   }
 }

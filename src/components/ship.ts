@@ -12,12 +12,13 @@ export class Ship extends Actor implements DamageCauser, DestroyValue {
   get damageToPlayer() { return -20 }
   get destroyValue() { return 5 }
   get hp() { return this._hp }
-  set hp(value: number) {
-    this._hp = Math.max(this._hp - 1, 0)
-  }
   get speed() { return this._speed }
   get age() { return this._age }
   set age(val: number) { this._age = val }
+
+  damageBy = (amount: number) => {
+    this._hp = Math.max(this._hp - amount, 0)
+  }
 
   constructor(args: ({ speed: number, hp: number } & ActorArgs)) {
     const { width, height } = Resources.Ship

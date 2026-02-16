@@ -1,4 +1,4 @@
-import { Collider, Scene } from "excalibur";
+import { Collider, Color, Scene } from "excalibur";
 import { Ship } from "../components/ship";
 import { GameData } from "../game-data";
 import { TemporaryItemManager } from "../components/temporary-item-manager";
@@ -34,13 +34,14 @@ export class ShipCollisions {
     const ship = self.owner as Ship
 
     if (shot.name === 'shot' && ship.name === 'ship') {
-      ship.hp -= 1
+      ship.damageBy(shot.damage)
       this.hitManager.createAt(shot)
       this.scene.remove(shot)
-      
+
       if (ship.hp === 0) {
         this.explosionManager.createAt(ship)
         gameData.sounds.explode.play()
+        gameData.score += ship.destroyValue
         this.scene.remove(shot)
         this.scene.remove(ship)
       }

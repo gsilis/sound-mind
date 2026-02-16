@@ -16,6 +16,8 @@ const BOOST_MULTI = 2
 const BOOST_RATE = 0.1
 const BOOST_MAX = 2000
 const SHOTS_AMOUNT = 500
+export const TILE_SIZE = 38
+export const COLUMNS = 20
 
 export class GameData {
   private _elementFactory?: ElementFactory
@@ -32,6 +34,7 @@ export class GameData {
   private _modalManager = new ModalManager(document.body)
   private _sounds = new GameSounds()
   private _recorder = new RecorderFactory(this)
+  private _shotDamage = 5
 
   private constructor() {}
 
@@ -94,7 +97,7 @@ export class GameData {
   get boost() { return this._boost }
   get running() { return this._running }
   get score() { return this._score }
-  set score(points: number) { this._score += points }
+  set score(points: number) { this._score = points }
   get hp() { return this._hp }
   set hp(points: number) {
     this._hp = Math.max(0, this._hp + points)
@@ -109,6 +112,8 @@ export class GameData {
 
     return dom || (document.createElement('div') as HTMLDivElement)
   }
+
+  get shotDamage() { return this._shotDamage }
 
   reset() {
     this._hp = STARTING_HP
