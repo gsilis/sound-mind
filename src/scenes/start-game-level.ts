@@ -29,6 +29,7 @@ export class StartGameLevel extends Scene {
 
   override onActivate(_context: SceneActivationContext<unknown, undefined>): void {
     this._multiplier = 0
+    this._useDefaultAudio = false
     this._background && this.add(this._background)
     this._logo && this.add(this._logo)
     this._menu = new CenterMenu()
