@@ -1,4 +1,4 @@
-import { Actor, Label, Scene, vec } from "excalibur"
+import { Actor, Color, Label, Scene, vec } from "excalibur"
 import { Wave } from "../scenes/waves"
 import { EmitCallback, ShipWave } from "./ship-wave"
 import { Play } from "../scenes/play"
@@ -62,10 +62,15 @@ export class WaveManager {
 
     if (this._shipWaves[this._waveNumber + 1] === undefined) {
       this._scene.add(this._waitActor)
-      this._waitActor.actions.delay(5000).callMethod(() => {
+      this._waitActor.actions.delay(1000).callMethod(() => {
+        this._label.text = `That's all!`
+        this._label.opacity = 1
+        this._scene.add(this._label)
+      }).delay(5000).callMethod(() => {
         (this._scene as Play).setState('game-over')
         gameData.stop()
         this._scene.remove(this._waitActor)
+        this._scene.remove(this._label)
       })
     } else {
       await this.showReadyMessage()
@@ -83,9 +88,11 @@ export class WaveManager {
       scale: vec(1, 1),
       duration: 200,
     }).fade(1, 500).delay(2000).callMethod(() => {
-      this._label.text = 'GET READY'
+      this._label.text = '!! Get Ready !!'
       return Promise.resolve()
-    }).blink(40, 40, 10).callMethod(() => {
+    })
+    .blink(10, 10, 15)
+    .callMethod(() => {
       this._label.opacity = 0
       return Promise.resolve()
     }).delay(2000).callMethod(() => {
