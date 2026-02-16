@@ -1,4 +1,4 @@
-import { Collider, Color, Scene } from "excalibur";
+import { Collider, Scene } from "excalibur";
 import { Ship } from "../components/ship";
 import { GameData } from "../game-data";
 import { TemporaryItemManager } from "../components/temporary-item-manager";
