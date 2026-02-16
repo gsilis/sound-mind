@@ -19,12 +19,15 @@ import { Hit } from "../components/hit";
 import { ShipMovingManager } from "../utilities/ship-moving-manager";
 import { WaveManager } from "../game-workers/wave-manager";
 import { WAVES } from "./waves";
+import { DropFactory } from "../components/drop-factory";
+import { SpeedObject } from "../interfaces/speed-object";
 
 const gameData = GameData.getInstance()
 
 export class Play extends Scene {
   private _shotFactory = new ShotFactory()
   private _shipCreator = new ShipFactory()
+  private _dropFactory = new DropFactory()
   private _playerCollisions?: PlayerCollisions
   private _shipCollisions?: ShipCollisions
   private _controller: ControlStateMachine<Play> = new ControlStateMachine()
@@ -94,7 +97,7 @@ export class Play extends Scene {
 
     this._playerCollisions = new PlayerCollisions(this, this.player)
     this._shipCollisions = new ShipCollisions(this, this._explosionManager, this._hitManager)
-    this.waves = new WaveManager(this, gameData.titleLabelFactory.create('', Color.Yellow), this.createShipInColumn)
+    this.waves = new WaveManager(this, gameData.titleLabelFactory.create('', Color.Yellow), this.createObjectInColumn)
 
     this._controller.addState('play', new PlayScheme(), ['pause', 'game-over'])
     this._controller.addState('pause', new PauseScheme(), ['play'])
@@ -165,6 +168,8 @@ export class Play extends Scene {
     this.score.pos.y = this.scoreLabel.pos.y
 
     this.movingManager.update(engine, elapsedMs)
+    this._hitManager?.update(engine)
+    this._explosionManager?.update(engine)
     gameData.running && this.waves?.update(elapsedMs)
   }
 
@@ -226,13 +231,31 @@ export class Play extends Scene {
     gameData.sounds.shoot.play()
   }
 
-  private createShipInColumn = (column: number) => {
+  private createObjectInColumn = (column: number, objectType: string) => {
     const gameSpaceWidth = COLUMNS * TILE_SIZE
     const xOffset = (this.engine.canvas.width / 2) - (gameSpaceWidth / 2) + (TILE_SIZE / 2)
     const x = (column * TILE_SIZE) + xOffset
-    const ship = this._shipCreator.create(x, -20, '')
-    this._shipCollisions?.add(ship)
+    let object: (SpeedObject & Actor) | null = null
 
-    return ship
+    switch (objectType) {
+      case '1':
+        object = this._shipCreator.create(x, -20)
+        object && this._shipCollisions?.add(object)
+        break
+
+      case 'A':
+        object = this._dropFactory.createAmmo(x, -20)
+        break
+
+      case 'F':
+        object = this._dropFactory.createFuel(x, -20)
+        break
+    }
+
+    if (object === null) {
+      throw new Error('Cannot deal with null object...')
+    }
+
+    return object
   }
 }

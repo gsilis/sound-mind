@@ -1,6 +1,7 @@
 import { Actor, CollisionType, Engine, vec } from "excalibur";
 import { Resources } from "./resources";
 import { GameData } from "./game-data";
+import { ActorCreator } from "./utilities/actor-creator";
 
 const gameData = GameData.getInstance()
 
@@ -19,6 +20,7 @@ type HealthStateType = typeof HEALTH_NORMAL | typeof HEALTH_HIT
 
 export class Player extends Actor {
   // Per second
+  private _plane: Actor
   private _flame: Actor
   private _flameMoving: Actor
   private _flameBoost: Actor
@@ -36,7 +38,7 @@ export class Player extends Actor {
   get healthState() { return this._healthState }
   set healthState(value: HealthStateType) {
     if (value === HEALTH_HIT) {
-      this.actions.blink(50, 50, 20).toPromise().then(() => {
+      this._plane.actions.blink(50, 50, 20).callMethod(() => {
         this._healthState = HEALTH_NORMAL
       })
     }
@@ -48,27 +50,23 @@ export class Player extends Actor {
     super({
       name: 'player',
       pos: vec(100, 100),
-      width: 34,
-      height: 64,
+      width: 32,
+      height: 32,
       collisionType: CollisionType.Passive,
     })
 
-    this._flame = new Actor()
-    this._flame.graphics.add(Resources.PlaneFlame.toSprite())
-    this._flameMoving = new Actor()
-    this._flameMoving.graphics.add(Resources.PlaneFlameMove.toSprite())
-    this._flameBoost = new Actor()
-    this._flameBoost.graphics.add(Resources.PlaneFlameBoost.toSprite())
-    this._planeLeft = new Actor()
-    this._planeLeft.graphics.add(Resources.PlaneLeft.toSprite())
-    this._planeRight = new Actor()
-    this._planeRight.graphics.add(Resources.PlaneRight.toSprite())
+    this._plane = ActorCreator.fromImage(Resources.Plane)
+    this._flame = ActorCreator.fromImage(Resources.PlaneFlame)
+    this._flameMoving = ActorCreator.fromImage(Resources.PlaneFlameMove)
+    this._flameBoost = ActorCreator.fromImage(Resources.PlaneFlameBoost)
+    this._planeLeft = ActorCreator.fromImage(Resources.PlaneLeft)
+    this._planeRight = ActorCreator.fromImage(Resources.PlaneRight)
 
     this.addChild(this._flame)
   }
 
   override onInitialize(engine: Engine): void {
-    this.graphics.add(Resources.Plane.toSprite())
+    this.addChild(this._plane)
     this._flame.graphics.opacity = 0.6
     this._flameMoving.actions.repeatForever((c) => {
       c.fade(0.7, 200)
@@ -77,6 +75,19 @@ export class Player extends Actor {
     this._flameBoost.actions.repeatForever((c) => {
       c.fade(0.8, 100)
       c.fade(1, 100)
+    })
+
+    const actors = [
+      this._plane,
+      this._flame,
+      this._flameMoving,
+      this._flameBoost,
+      this._planeLeft,
+      this._planeRight,
+    ]
+    
+    actors.forEach((actor) => {
+      actor.pos.y += 16
     })
   }
 

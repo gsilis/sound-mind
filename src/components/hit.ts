@@ -1,4 +1,4 @@
-import { Actor, Engine } from "excalibur"
+import { Actor, ActorArgs, Engine } from "excalibur"
 import { ActorCreator } from "../utilities/actor-creator"
 import { Resources } from "../resources"
 import { TemporaryActor } from "../interfaces/temporary-actor"
@@ -8,6 +8,10 @@ export class Hit extends Actor implements TemporaryActor {
 
   get complete() { return this._complete }
 
+  constructor(args: ActorArgs = {}) {
+    super({ ...args, name: 'hit' })
+  }
+
   override onInitialize(_engine: Engine): void {
     this.addChild(ActorCreator.fromImage(Resources.Hit))
   }
@@ -15,7 +19,6 @@ export class Hit extends Actor implements TemporaryActor {
   override onAdd(_engine: Engine): void {
     this.actions.delay(100).toPromise().then(() => {
       this._complete = true
-      this.graphics.opacity = 0
     })
   }
 

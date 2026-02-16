@@ -30,5 +30,9 @@ export class Shot extends Actor {
     if (!gameData.running) return
     super.onPreUpdate(engine, elapsed)
     this.pos.y -= (elapsed * this._speed)
+
+    if (this.pos.y < -32) {
+      this.parent?.removeChild(this)
+    }
   }
 }

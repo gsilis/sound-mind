@@ -3,8 +3,9 @@ import { ActorCreator } from "../utilities/actor-creator";
 import { Resources } from "../resources";
 import { DamageCauser } from "../interfaces/damage-causer";
 import { DestroyValue } from "../interfaces/destroy-value";
+import { SpeedObject } from "../interfaces/speed-object";
 
-export class Ship extends Actor implements DamageCauser, DestroyValue {
+export class Ship extends Actor implements DamageCauser, DestroyValue, SpeedObject {
   private _age: number = 0
   private _speed: number
   private _hp: number
@@ -15,6 +16,9 @@ export class Ship extends Actor implements DamageCauser, DestroyValue {
   get speed() { return this._speed }
   get age() { return this._age }
   set age(val: number) { this._age = val }
+
+  get speedObjectType() { return 'ship' }
+  get effectValue() { return 0 }
 
   damageBy = (amount: number) => {
     this._hp = Math.max(this._hp - amount, 0)

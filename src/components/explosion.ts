@@ -46,7 +46,6 @@ export class Explosion extends Actor implements TemporaryActor {
     if (this._loop) return
     this.actions.delay(500).toPromise().then(() => {
       this._complete = true
-      this.graphics.opacity = 0
     })
   }
 

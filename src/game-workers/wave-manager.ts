@@ -6,7 +6,7 @@ import { GameData } from "../game-data"
 
 const gameData = GameData.getInstance()
 
-export type CreateShipType = (column: number) => Actor
+export type CreateShipType = (column: number, objectType: string) => Actor
 
 export class WaveManager {
   private _scene: Scene
@@ -31,6 +31,15 @@ export class WaveManager {
 
   clear() {
     this._shipWaves = []
+    this._waveNumber = -1
+
+    if (this._scene.contains(this._label)) {
+      this._scene.remove(this._label)
+    }
+
+    if (this._scene.contains(this._waitActor)) {
+      this._scene.remove(this._waitActor)
+    }
   }
 
   nextWave() {
@@ -49,7 +58,7 @@ export class WaveManager {
   private onEmit: EmitCallback = (row) => {
     row.split('').forEach((column, index) => {
       if (column !== '0') {
-        const ship = this._createShip(index)
+        const ship = this._createShip(index, column)
 
         this._scene.add(ship)
       }
@@ -88,10 +97,10 @@ export class WaveManager {
       scale: vec(1, 1),
       duration: 200,
     }).fade(1, 500).delay(2000).callMethod(() => {
-      this._label.text = '!! Get Ready !!'
+      this._label.text = 'Get Ready'
       return Promise.resolve()
     })
-    .blink(10, 10, 15)
+    .delay(1000)
     .callMethod(() => {
       this._label.opacity = 0
       return Promise.resolve()

@@ -29,6 +29,11 @@ export class Boost {
     return (this._balance - time) >= 0
   }
 
+  earn(amount: number) {
+    this._balance += amount
+    this._balance = Math.min(this._balance, this._max)
+  }
+
   spend(time: number) {
     this._balance = Math.max(this._balance - time, 0)
     this._recharge = false

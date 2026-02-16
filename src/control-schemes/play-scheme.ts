@@ -2,7 +2,6 @@ import { BoundingBox, Engine, Keys, Sound } from "excalibur";
 import { ControlScheme } from "./control-scheme";
 import { ControlStateMachine } from "./control-state-machine";
 import { Play } from "../scenes/play";
-import { between } from "../utilities/random";
 import { GameData } from "../game-data";
 import { FLY_BOOST, FLY_IDLE, FLY_STANDARD, MOVE_LEFT, MOVE_RIGHT, MOVE_STRAIGHT } from "../player";
 
@@ -20,7 +19,8 @@ export class PlayScheme implements ControlScheme<Play> {
     const left = keyboard.isHeld(Keys.A) || keyboard.isHeld(Keys.Left)
     const right = keyboard.isHeld(Keys.D) || keyboard.isHeld(Keys.Right)
     const isMoving = up || down || left || right
-    const isBoosting = isMoving && leftShift
+    const canBoost = gameData.boost.availableFor(elapsed)
+    const isBoosting = isMoving && leftShift && canBoost
     const esc = keyboard.wasPressed(Keys.Esc)
     const shoot = space || rightShift
 
@@ -40,7 +40,7 @@ export class PlayScheme implements ControlScheme<Play> {
 
     if (!scene.player) return
 
-    if (isBoosting && gameData.boost.availableFor(elapsed)) {
+    if (isBoosting) {
       gameData.boost.spend(elapsed)
       scene.player.flyState = FLY_BOOST
       !gameData.sounds.boost.isPlaying() && gameData.sounds.boost.play()
