@@ -233,7 +233,7 @@ export class Play extends Scene {
 
   private createObjectInColumn = (column: number, objectType: string) => {
     const gameSpaceWidth = COLUMNS * TILE_SIZE
-    const xOffset = (this.engine.canvas.width / 2) - (gameSpaceWidth / 2) + (TILE_SIZE / 2)
+    const xOffset = (this.engine.screen.width / 2) - (gameSpaceWidth / 2) + (TILE_SIZE / 2)
     const x = (column * TILE_SIZE) + xOffset
     let object: (SpeedObject & Actor) | null = null
 
