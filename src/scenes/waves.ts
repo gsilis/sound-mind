@@ -107,7 +107,7 @@ export const WAVES: Wave[] = [
     ]
   },
   {
-    speed: 8,
+    speed: 32,
     data: [
       ...padding,
       '00000000000000000000',
@@ -180,7 +180,7 @@ export const WAVES: Wave[] = [
     ]
   },
   {
-    speed: 8,
+    speed: 32,
     data: [
       ...padding,
       '00000011000111000000',
